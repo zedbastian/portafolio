@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetroBox | Nuestros Clientes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #3b82f6;
+            --secondary: #8b5cf6;
+            --dark: #0a0e27;
+            --spacing: 1.5rem;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+            background: var(--dark);
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        code {
+            background: rgba(59, 130, 246, 0.1);
+            padding: 3px 8px;
+            border-radius: 6px;
+            color: #60a5fa;
+            font-family: 'Courier New', monospace;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #94a3b8;
+        }
+
+        .author {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Gallery Grid */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--spacing);
+            margin-bottom: 4rem;
+        }
+
+        /* Gallery Items */
+        .gallery-item {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            cursor: pointer;
+            background: white;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-10px);
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 20px 60px rgba(59, 130, 246, 0.3);
+        }
+
+        .client-logo {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .client-logo img {
+            max-width: 80%;
+            max-height: 80%;
+            object-fit: contain;
+            transition: all 0.3s ease;
+        }
+
+        .gallery-item:hover .client-logo img {
+            transform: scale(1.1);
+        }
+
+        /* Overlay */
+        .overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(
+                to top,
+                rgba(10, 14, 39, 0.95) 0%,
+                rgba(10, 14, 39, 0.7) 50%,
+                transparent 100%
+            );
+            color: white;
+            padding: 1.5rem;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover .overlay {
+            transform: translateY(0);
+        }
+
+        .overlay h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.25rem;
+            color: #60a5fa;
+        }
+
+        .overlay p {
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+        /* Featured Items */
+        .gallery-item.featured {
+            grid-column: span 2;
+        }
+
+        /* Explanation Section */
+        .explanation {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .explanation h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: #e2e8f0;
+        }
+
+        .explanation h2 span {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .code-example {
+            background: rgba(10, 14, 39, 0.8);
+            color: #e2e8f0;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .code-example h3 {
+            color: #60a5fa;
+            margin-bottom: 1rem;
+        }
+
+        .code-example pre {
+            margin: 0;
+        }
+
+        .code-example code {
+            background: transparent;
+            color: #34d399;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            padding: 0;
+            border: none;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature {
+            padding: 1.5rem;
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .feature:hover {
+            transform: translateY(-5px);
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
+        }
+
+        .feature h4 {
+            color: #60a5fa;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .feature p {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .gallery-item.featured {
+                grid-column: span 1;
+            }
+            
+            .explanation {
+                padding: 2rem 1.5rem;
+            }
+
+            .logo-icon {
+                font-size: 3rem;
+            }
+
+            .logo-text {
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .gallery {
+                gap: 1rem;
+            }
+            
+            .code-example {
+                padding: 1rem;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>⛽ Nuestros Clientes</h1>
+            <p class="subtitle">Empresas líderes que confían en <code>PetroBox</code> para su gestión</p>
+            <p class="author">Por Sebastián Salazar</p>
+        </header>
+
+        <!-- Gallery Grid -->
+        <section class="gallery">
+            
+            <div class="gallery-item">
+                <div class="client-logo">
+                    <img src="https://www.texacocontechron.com/history/carousel/images/logo-1981.png" alt="Texaco">
+                </div>
+                <div class="overlay">
+                    <h3>Texaco Bolivia</h3>
+                    <p>45 estaciones activas</p>
+                </div>
+            </div>
+
+            <div class="gallery-item featured">
+                <div class="client-logo">
+                    <img src="https://www.logotypes101.com/logos/997/439A337E9E0A8B2326BC2299DF014041/FelipeMotta.png" alt="Felipe Motta">
+                </div>
+                <div class="overlay">
+                    <h3>Felipe Motta</h3>
+                    <p>Operaciones integradas</p>
+                </div>
+            </div>
+
+            <div class="gallery-item">
+                <div class="client-logo">
+                    <img src="https://pbs.twimg.com/profile_images/812381795933179908/gJNA-tF7_400x400.jpg" alt="PPC">
+                </div>
+                <div class="overlay">
+                    <h3>PPC</h3>
+                    <p>Gestión de flota completa</p>
+                </div>
+            </div>
+
+            <div class="gallery-item">
+                <div class="client-logo">
+                    <img src="https://genex.com.bo/wp-content/uploads/2024/01/WhatsApp-Image-2024-01-30-at-16.51.11.jpeg" alt="Genex">
+                </div>
+                <div class="overlay">
+                    <h3>Genex</h3>
+                    <p>Control de inventarios</p>
+                </div>
+            </div>
+
+            <div class="gallery-item">
+                <div class="client-logo">
+                    <img src="https://laboral.infocalscz.edu.bo/wp-content/uploads/2024/03/Logodos.jpg" alt="CIASA">
+                </div>
+                <div class="overlay">
+                    <h3>CIASA</h3>
+                    <p>28 puntos de venta</p>
+                </div>
+            </div>
+
+            <div class="gallery-item">
+                <div class="client-logo">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0akkThnWFoqQK1RqtyT_E64uVtHkI4jv7tA&s" alt="IASA">
+                </div>
+                <div class="overlay">
+                    <h3>IASA</h3>
+                    <p>Gestión de transporte</p>
+                </div>
+            </div>
+
+            <div class="gallery-item">
+                <div class="client-logo">
+                    <img src="https://aguai.com.bo/wp/wp-content/uploads/2023/02/logo.png" alt="AGUAI">
+                </div>
+                <div class="overlay">
+                    <h3>AGUAI</h3>
+                    <p>Operaciones multi-sucursal</p>
+                </div>
+            </div>
+
+            <div class="gallery-item featured">
+                <div class="client-logo">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSPbYTFfWLkEEXijZ1xSB6kccStm1EFIW-5yA&s" alt="Ferroviaria Oriental">
+                </div>
+                <div class="overlay">
+                    <h3>Ferroviaria Oriental</h3>
+                    <p>Soluciones de transporte</p>
+                </div>
+            </div>
+
+            <div class="gallery-item">
+                <div class="client-logo">
+                    <img src="https://www.texacocontechron.com/history/carousel/images/logo-1981.png" alt="Texaco">
+                </div>
+                <div class="overlay">
+                    <h3>Petroconosur</h3>
+                    <p>Cliente desde 2020</p>
+                </div>
+            </div>
+
+            <div class="gallery-item">
+                <div class="client-logo">
+                    <img src="https://pbs.twimg.com/profile_images/812381795933179908/gJNA-tF7_400x400.jpg" alt="PPC">
+                </div>
+                <div class="overlay">
+                    <h3>Banco Ganadero</h3>
+                    <p>Pagos QR integrados</p>
+                </div>
+            </div>
+
+            <div class="gallery-item">
+                <div class="client-logo">
+                    <img src="https://genex.com.bo/wp-content/uploads/2024/01/WhatsApp-Image-2024-01-30-at-16.51.11.jpeg" alt="Genex">
+                </div>
+                <div class="overlay">
+                    <h3>Leo Fitness Club</h3>
+                    <p>Software personalizado</p>
+                </div>
+            </div>
+
+            <div class="gallery-item">
+                <div class="client-logo">
+                    <img src="https://aguai.com.bo/wp/wp-content/uploads/2023/02/logo.png" alt="AGUAI">
+                </div>
+                <div class="overlay">
+                    <h3>SIAT Bolivia</h3>
+                    <p>Facturación automática</p>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Explicación -->
+        <section class="explanation">
+            <h2>Cómo Funciona Este <span>Grid</span></h2>
+            <div class="code-example">
+                <h3>CSS Grid Con Auto-fit</h3>
+                <pre><code>.gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+/* ⭐ auto-fit: Crea tantas columnas como quepan
+   ⭐ minmax(280px, 1fr): Mínimo 280px, máximo 1 fracción
+   ⭐ Resultado: Responsive automático SIN media queries */</code></pre>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature">
+                    <h4>🔄 Auto-fit</h4>
+                    <p>Crea automáticamente el número de columnas que caben en el contenedor</p>
+                </div>
+                <div class="feature">
+                    <h4>📏 Minmax()</h4>
+                    <p>Define un tamaño mínimo (280px) y máximo (1fr) para las columnas</p>
+                </div>
+                <div class="feature">
+                    <h4>🎨 1fr</h4>
+                    <p>Fracción del espacio disponible - las columnas crecen uniformemente</p>
+                </div>
+                <div class="feature">
+                    <h4>📱 Sin Media Queries</h4>
+                    <p>Se adapta automáticamente a cualquier tamaño de pantalla</p>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+</html>

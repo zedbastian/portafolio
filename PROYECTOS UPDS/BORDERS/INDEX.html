@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bordes y Border-Radius | Sebastián Salazar</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #1a202c;
+            line-height: 1.6;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            letter-spacing: -1px;
+        }
+
+        .header .subtitle {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .header .author {
+            margin-top: 1rem;
+            font-size: 1rem;
+            opacity: 0.8;
+            font-weight: 500;
+        }
+
+        .section {
+            background: white;
+            border-radius: 24px;
+            padding: 3rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .section h2 {
+            font-size: 1.75rem;
+            margin-bottom: 2rem;
+            color: #667eea;
+            font-weight: 700;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .grid-compact {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
+        .card {
+            padding: 2rem;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.4);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-code {
+            font-size: 0.875rem;
+            color: #667eea;
+            font-family: 'Courier New', monospace;
+            line-height: 1.8;
+        }
+
+        /* Estilos de Border */
+        .border-solid { border: 4px solid #667eea; }
+        .border-dashed { border: 4px dashed #48bb78; }
+        .border-dotted { border: 4px dotted #f56565; }
+        .border-double { border: 6px double #9f7aea; }
+        .border-groove { border: 6px groove #4299e1; }
+        .border-ridge { border: 6px ridge #ed8936; }
+
+        /* Border individuales */
+        .border-top { border-top: 5px solid #667eea; }
+        .border-bottom { border-bottom: 5px solid #48bb78; }
+        .border-left { border-left: 5px solid #f56565; }
+        .border-multi { 
+            border-top: 4px solid #667eea; 
+            border-bottom: 4px solid #f56565; 
+        }
+
+        /* Border Radius */
+        .radius-small { border-radius: 8px; border: 3px solid #667eea; }
+        .radius-medium { border-radius: 20px; border: 3px solid #667eea; }
+        .radius-large { border-radius: 40px; border: 3px solid #667eea; }
+        .radius-full { border-radius: 999px; border: 3px solid #667eea; }
+
+        /* Formas */
+        .shapes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 2rem;
+        }
+
+        .shape-item {
+            text-align: center;
+        }
+
+        .shape {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: 4px solid #5568d3;
+        }
+
+        .shape-circle { border-radius: 50%; }
+        .shape-rounded { border-radius: 24px; }
+        .shape-top { border-radius: 60px 60px 0 0; }
+        .shape-leaf { border-radius: 0 100% 0 100%; }
+
+        .shape-label {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .shape-code {
+            font-size: 0.875rem;
+            color: #718096;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Botones */
+        .buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin: 2rem 0;
+        }
+
+        .btn {
+            padding: 14px 32px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: 2px solid transparent;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-ghost {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            border: 2px solid transparent;
+        }
+
+        .btn-ghost:hover {
+            border-color: #667eea;
+        }
+
+        /* Cards especiales */
+        .special-card {
+            padding: 2rem;
+            background: white;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .card-simple {
+            border: 2px solid #e2e8f0;
+        }
+
+        .card-thick {
+            border: 4px solid #667eea;
+        }
+
+        .card-accent {
+            border-left: 6px solid #48bb78;
+            border: 1px solid #e2e8f0;
+        }
+
+        .card-gradient {
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(135deg, #667eea, #764ba2) border-box;
+            border: 4px solid transparent;
+        }
+
+        .special-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-content h3 {
+            color: #2d3748;
+            margin-bottom: 0.75rem;
+            font-size: 1.25rem;
+        }
+
+        .card-content p {
+            color: #718096;
+            font-size: 0.95rem;
+        }
+
+        /* Código de referencia */
+        .code-section {
+            background: #1a202c;
+            color: #e2e8f0;
+            border-radius: 20px;
+            padding: 2rem;
+        }
+
+        .code-section h2 {
+            color: #667eea;
+            margin-bottom: 1.5rem;
+        }
+
+        pre {
+            background: #2d3748;
+            padding: 2rem;
+            border-radius: 12px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            line-height: 1.8;
+            font-size: 0.9rem;
+        }
+
+        pre code {
+            color: #48bb78;
+        }
+
+        @media (max-width: 768px) {
+            .section {
+                padding: 2rem 1.5rem;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Bordes y Border-Radius</h1>
+            <p class="subtitle">Guía moderna de propiedades CSS</p>
+            <p class="author">Por Sebastián Salazar</p>
+        </div>
+
+        <!-- Sección 1: Estilos de Border -->
+        <div class="section">
+            <h2>Estilos de Border</h2>
+            <div class="grid grid-compact">
+                <div class="card border-solid">
+                    <div class="card-title">Solid</div>
+                    <div class="card-code">border: 4px solid #667eea;</div>
+                </div>
+                <div class="card border-dashed">
+                    <div class="card-title">Dashed</div>
+                    <div class="card-code">border: 4px dashed #48bb78;</div>
+                </div>
+                <div class="card border-dotted">
+                    <div class="card-title">Dotted</div>
+                    <div class="card-code">border: 4px dotted #f56565;</div>
+                </div>
+                <div class="card border-double">
+                    <div class="card-title">Double</div>
+                    <div class="card-code">border: 6px double #9f7aea;</div>
+                </div>
+                <div class="card border-groove">
+                    <div class="card-title">Groove</div>
+                    <div class="card-code">border: 6px groove #4299e1;</div>
+                </div>
+                <div class="card border-ridge">
+                    <div class="card-title">Ridge</div>
+                    <div class="card-code">border: 6px ridge #ed8936;</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección 2: Bordes Individuales -->
+        <div class="section">
+            <h2>Bordes por Lado</h2>
+            <div class="grid">
+                <div class="card border-top">
+                    <div class="card-title">Top</div>
+                    <div class="card-code">border-top: 5px solid #667eea;</div>
+                </div>
+                <div class="card border-bottom">
+                    <div class="card-title">Bottom</div>
+                    <div class="card-code">border-bottom: 5px solid #48bb78;</div>
+                </div>
+                <div class="card border-left">
+                    <div class="card-title">Left</div>
+                    <div class="card-code">border-left: 5px solid #f56565;</div>
+                </div>
+                <div class="card border-multi">
+                    <div class="card-title">Múltiples</div>
+                    <div class="card-code">border-top + border-bottom</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección 3: Border Radius -->
+        <div class="section">
+            <h2>Border Radius</h2>
+            <div class="grid">
+                <div class="card radius-small">
+                    <div class="card-title">Pequeño</div>
+                    <div class="card-code">border-radius: 8px;</div>
+                </div>
+                <div class="card radius-medium">
+                    <div class="card-title">Mediano</div>
+                    <div class="card-code">border-radius: 20px;</div>
+                </div>
+                <div class="card radius-large">
+                    <div class="card-title">Grande</div>
+                    <div class="card-code">border-radius: 40px;</div>
+                </div>
+                <div class="card radius-full">
+                    <div class="card-title">Pill</div>
+                    <div class="card-code">border-radius: 999px;</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección 4: Formas -->
+        <div class="section">
+            <h2>Formas con Border Radius</h2>
+            <div class="shapes-grid">
+                <div class="shape-item">
+                    <div class="shape shape-circle"></div>
+                    <div class="shape-label">Círculo</div>
+                    <div class="shape-code">border-radius: 50%;</div>
+                </div>
+                <div class="shape-item">
+                    <div class="shape shape-rounded"></div>
+                    <div class="shape-label">Redondeado</div>
+                    <div class="shape-code">border-radius: 24px;</div>
+                </div>
+                <div class="shape-item">
+                    <div class="shape shape-top"></div>
+                    <div class="shape-label">Top Curvo</div>
+                    <div class="shape-code">border-radius: 60px 60px 0 0;</div>
+                </div>
+                <div class="shape-item">
+                    <div class="shape shape-leaf"></div>
+                    <div class="shape-label">Hoja</div>
+                    <div class="shape-code">border-radius: 0 100% 0 100%;</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección 5: Botones -->
+        <div class="section">
+            <h2>Botones con Bordes</h2>
+            <div class="buttons">
+                <button class="btn btn-primary">Primary</button>
+                <button class="btn btn-outline">Outline</button>
+                <button class="btn btn-ghost">Ghost</button>
+            </div>
+        </div>
+
+        <!-- Sección 6: Cards -->
+        <div class="section">
+            <h2>Cards con Estilos</h2>
+            <div class="grid">
+                <div class="special-card card-simple">
+                    <div class="card-content">
+                        <h3>Card Simple</h3>
+                        <p>border: 2px solid #e2e8f0;</p>
+                    </div>
+                </div>
+                <div class="special-card card-thick">
+                    <div class="card-content">
+                        <h3>Card Grueso</h3>
+                        <p>border: 4px solid #667eea;</p>
+                    </div>
+                </div>
+                <div class="special-card card-accent">
+                    <div class="card-content">
+                        <h3>Card Acento</h3>
+                        <p>border-left: 6px solid #48bb78;</p>
+                    </div>
+                </div>
+                <div class="special-card card-gradient">
+                    <div class="card-content">
+                        <h3>Card Gradiente</h3>
+                        <p>background con border-box</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Código de Referencia -->
+        <div class="section code-section">
+            <h2>📚 Referencia Rápida</h2>
+            <pre><code>/* Border básico */
+border: 2px solid #667eea;
+
+/* Bordes individuales */
+border-top: 1px solid black;
+border-right: 2px dashed blue;
+border-bottom: 3px dotted red;
+border-left: 4px double green;
+
+/* Border-radius */
+border-radius: 10px; /* Todos iguales */
+border-radius: 10px 20px 30px 40px; /* TL TR BR BL */
+border-radius: 50%; /* Círculo */
+
+/* Esquinas específicas */
+border-top-left-radius: 10px;
+border-top-right-radius: 10px;
+
+/* Estilos disponibles */
+solid | dashed | dotted | double | groove | ridge | inset | outset</code></pre>
+        </div>
+    </div>
+</body>
+</html>

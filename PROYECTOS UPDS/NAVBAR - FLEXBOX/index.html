@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetroBox | Sistema de Gestión de Combustible</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            background: #0a0e27;
+            color: #e2e8f0;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: rgba(10, 14, 39, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .navbar-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 70px;
+        }
+
+        /* Logo */
+        .navbar-logo a {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 800;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-logo a:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Menú */
+        .navbar-menu {
+            list-style: none;
+            display: flex;
+            gap: 0.5rem;
+            margin: 0 auto 0 0;
+        }
+
+        .navbar-menu li a {
+            color: #94a3b8;
+            text-decoration: none;
+            padding: 0.7rem 1.2rem;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .navbar-menu li a:hover {
+            background: rgba(59, 130, 246, 0.1);
+            color: #60a5fa;
+        }
+
+        .navbar-menu li a::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%);
+            transition: width 0.3s ease;
+        }
+
+        .navbar-menu li a:hover::after,
+        .navbar-menu li a.active::after {
+            width: 60%;
+        }
+
+        .navbar-menu li a.active {
+            color: #60a5fa;
+        }
+
+        /* Botones */
+        .navbar-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .btn-login {
+            background: rgba(59, 130, 246, 0.1);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-login:hover {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: #3b82f6;
+        }
+
+        .btn-signup {
+            background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
+            color: white;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-signup::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(139, 92, 246, 0.3) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn-signup:hover::before {
+            opacity: 1;
+        }
+
+        .btn-signup:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(59, 130, 246, 0.5);
+        }
+
+        /* Botón Hamburguesa */
+        .navbar-toggle {
+            display: none;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 30px;
+            height: 25px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            z-index: 1001;
+        }
+
+        .navbar-toggle span {
+            width: 100%;
+            height: 3px;
+            background: white;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+
+        .navbar-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .navbar-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+
+        /* Secciones */
+        .section {
+            min-height: 100vh;
+            padding: 5rem 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .section-content {
+            max-width: 1200px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .section h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #e2e8f0;
+        }
+
+        .section h2 span {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 3rem;
+            font-size: 0.9rem;
+        }
+
+        /* Hero */
+        .section-hero {
+            background: linear-gradient(135deg, #0a0e27 0%, #1e293b 100%);
+            text-align: center;
+        }
+
+        .section-hero h1 {
+            color: white;
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            margin-bottom: 1rem;
+            font-weight: 800;
+            animation: fadeInUp 1s ease;
+        }
+
+        .section-hero h1 span {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-hero p {
+            color: #94a3b8;
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            animation: fadeInUp 1s ease 0.2s backwards;
+        }
+
+        .btn-cta {
+            background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
+            color: white;
+            padding: 1rem 2.5rem;
+            font-size: 1.1rem;
+            animation: fadeInUp 1s ease 0.4s backwards;
+        }
+
+        .btn-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.5);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background: rgba(15, 23, 42, 0.7);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            backdrop-filter: blur(10px);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 15px 40px rgba(59, 130, 246, 0.3);
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .card h3 {
+            color: #e2e8f0;
+            margin-bottom: 1rem;
+        }
+
+        .card p {
+            color: #94a3b8;
+        }
+
+        /* Footer */
+        .footer {
+            background: rgba(10, 14, 39, 0.95);
+            border-top: 1px solid rgba(59, 130, 246, 0.2);
+            color: #64748b;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar-container {
+                padding: 0 1rem;
+            }
+            
+            .navbar-toggle {
+                display: flex;
+            }
+            
+            .navbar-menu,
+            .navbar-actions {
+                position: fixed;
+                top: 70px;
+                left: -100%;
+                width: 100%;
+                background: rgba(10, 14, 39, 0.98);
+                backdrop-filter: blur(10px);
+                flex-direction: column;
+                align-items: center;
+                padding: 2rem 0;
+                transition: left 0.3s ease;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+                border-top: 1px solid rgba(59, 130, 246, 0.2);
+            }
+            
+            .navbar-actions {
+                top: auto;
+                bottom: 0;
+                padding: 1.5rem 0;
+                border-top: 1px solid rgba(59, 130, 246, 0.2);
+            }
+            
+            .navbar-menu.active,
+            .navbar-actions.active {
+                left: 0;
+            }
+            
+            .navbar-menu {
+                gap: 0;
+            }
+            
+            .navbar-menu li {
+                width: 100%;
+                text-align: center;
+            }
+            
+            .navbar-menu li a {
+                width: 100%;
+                padding: 1rem;
+                justify-content: center;
+            }
+            
+            .navbar-menu li a::after {
+                display: none;
+            }
+            
+            .navbar-actions {
+                gap: 1rem;
+                width: 100%;
+                padding: 1.5rem;
+            }
+            
+            .navbar-actions .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .section-hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .section h2 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <div class="navbar-container">
+            <!-- Logo -->
+            <div class="navbar-logo">
+                <a href="#inicio">
+                    <div class="logo-icon">⛽</div>
+                    <span>PetroBox</span>
+                </a>
+            </div>
+
+            <!-- Menú -->
+            <ul class="navbar-menu" id="navbarMenu">
+                <li><a href="#inicio" class="nav-link active">Inicio</a></li>
+                <li><a href="#servicios" class="nav-link">Servicios</a></li>
+                <li><a href="#planes" class="nav-link">Planes</a></li>
+                <li><a href="#clientes" class="nav-link">Clientes</a></li>
+                <li><a href="#contacto" class="nav-link">Contacto</a></li>
+            </ul>
+
+            <!-- Botones -->
+            <div class="navbar-actions">
+                <button class="btn btn-login">Iniciar Sesión</button>
+                <button class="btn btn-signup">Demo Gratis</button>
+            </div>
+
+            <!-- Hamburguesa -->
+            <button class="navbar-toggle" id="navbarToggle" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main -->
+    <main>
+        <!-- Hero -->
+        <section id="inicio" class="section section-hero">
+            <div class="section-content">
+                <h1>Gestión Inteligente de <span>Combustible</span></h1>
+                <p>Control total de tu estación en tiempo real</p>
+                <button class="btn btn-cta">Solicitar Demo</button>
+            </div>
+        </section>
+
+        <!-- Servicios -->
+        <section id="servicios" class="section">
+            <div class="section-content">
+                <h2>Nuestros <span>Servicios</span></h2>
+                <p class="section-subtitle">Por Sebastián Salazar</p>
+                <div class="cards-grid">
+                    <div class="card">
+                        <div class="card-icon">📊</div>
+                        <h3>Control de Inventarios</h3>
+                        <p>Monitoreo en tiempo real de niveles de combustible y alertas automáticas.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">💳</div>
+                        <h3>Sistema de Ventas</h3>
+                        <p>POS integrado con múltiples métodos de pago y facturación electrónica.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">📱</div>
+                        <h3>App Móvil</h3>
+                        <p>Accede a reportes y controles desde cualquier lugar con nuestra app.</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🔐</div>
+                        <h3>Seguridad Total</h3>
+                        <p>Protección de datos con encriptación y detección de fraudes.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Planes -->
+        <section id="planes" class="section">
+            <div class="section-content">
+                <h2>Planes <span>Flexibles</span></h2>
+                <p class="section-subtitle">Soluciones para cada tamaño de operación</p>
+                <div class="cards-grid">
+                    <div class="card">
+                        <div class="card-icon">🏪</div>
+                        <h3>Básico</h3>
+                        <p>Ideal para estaciones pequeñas. Desde $49/mes</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">💼</div>
+                        <h3>Profesional</h3>
+                        <p>Para operaciones en crecimiento. Desde $149/mes</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">🏢</div>
+                        <h3>Enterprise</h3>
+                        <p>Solución personalizada para redes grandes. Precio personalizado</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Clientes -->
+        <section id="clientes" class="section">
+            <div class="section-content">
+                <h2>Confían en <span>PetroBox</span></h2>
+                <p class="section-subtitle">500+ estaciones en 12 países</p>
+                <div class="cards-grid">
+                    <div class="card">
+                        <h3>500+</h3>
+                        <p>Estaciones activas</p>
+                    </div>
+                    <div class="card">
+                        <h3>12</h3>
+                        <p>Países en Latinoamérica</p>
+                    </div>
+                    <div class="card">
+                        <h3>99.9%</h3>
+                        <p>Uptime garantizado</p>
+                    </div>
+                    <div class="card">
+                        <h3>24/7</h3>
+                        <p>Soporte técnico</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contacto -->
+        <section id="contacto" class="section">
+            <div class="section-content">
+                <h2>Hablemos de tu <span>Proyecto</span></h2>
+                <p class="section-subtitle">Estamos listos para ayudarte</p>
+                <div class="cards-grid">
+                    <div class="card">
+                        <div class="card-icon">📧</div>
+                        <h3>Email</h3>
+                        <p>info@petrobox.com</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">📱</div>
+                        <h3>Teléfono</h3>
+                        <p>+1 (555) 123-4567</p>
+                    </div>
+                    <div class="card">
+                        <div class="card-icon">💬</div>
+                        <h3>WhatsApp</h3>
+                        <p>Chat en vivo 24/7</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2025 PetroBox | Desarrollado por Sebastián Salazar</p>
+    </footer>
+
+    <script>
+        const navbarToggle = document.getElementById('navbarToggle');
+        const navbarMenu = document.getElementById('navbarMenu');
+        const navbarActions = document.querySelector('.navbar-actions');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const navbar = document.getElementById('navbar');
+
+        // Toggle menú
+        navbarToggle.addEventListener('click', () => {
+            navbarToggle.classList.toggle('active');
+            navbarMenu.classList.toggle('active');
+            navbarActions.classList.toggle('active');
+            
+            if (navbarMenu.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        });
+
+        // Cerrar menú al hacer clic en enlace
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                navbarToggle.classList.remove('active');
+                navbarMenu.classList.remove('active');
+                navbarActions.classList.remove('active');
+                document.body.style.overflow = '';
+                
+                navLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+            });
+        });
+
+        // Navbar scroll
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll > 100) {
+                navbar.style.background = 'rgba(10, 14, 39, 0.98)';
+                navbar.style.boxShadow = '0 4px 30px rgba(59, 130, 246, 0.3)';
+            } else {
+                navbar.style.background = 'rgba(10, 14, 39, 0.95)';
+                navbar.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.5)';
+            }
+        });
+
+        // Scroll spy
+        const sections = document.querySelectorAll('.section');
+        const observerOptions = {
+            root: null,
+            rootMargin: '-50% 0px -50% 0px',
+            threshold: 0
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.getAttribute('id');
+                    navLinks.forEach(link => link.classList.remove('active'));
+                    const activeLink = document.querySelector(`.nav-link[href="#${id}"]`);
+                    if (activeLink) activeLink.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => observer.observe(section));
+
+        // Cerrar menú al hacer clic fuera
+        document.addEventListener('click', (e) => {
+            const isClickInsideNavbar = navbar.contains(e.target);
+            const isMenuOpen = navbarMenu.classList.contains('active');
+            
+            if (!isClickInsideNavbar && isMenuOpen) {
+                navbarToggle.classList.remove('active');
+                navbarMenu.classList.remove('active');
+                navbarActions.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+
+        console.log('⛽ PetroBox - Desarrollado por Sebastián Salazar');
+    </script>
+</body>
+</html>

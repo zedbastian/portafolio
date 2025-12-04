@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Box-Sizing | Sebastián Salazar</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+            background: #0a0e27;
+            color: #e2e8f0;
+            padding: 2rem 1rem;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: clamp(2rem, 5vw, 3rem);
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 800;
+        }
+
+        .intro {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+        }
+
+        .author {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 3rem;
+        }
+
+        code {
+            background: rgba(59, 130, 246, 0.1);
+            padding: 3px 8px;
+            border-radius: 6px;
+            color: #60a5fa;
+            font-family: 'Courier New', monospace;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .box-wrapper {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 2rem;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .box-wrapper h2 {
+            margin: 0 0 1.5rem 0;
+            font-size: 1.3rem;
+            color: #e2e8f0;
+        }
+
+        /* Las dos cajas */
+        .box {
+            width: 200px;
+            padding: 20px;
+            border: 10px solid;
+            background-color: rgba(30, 41, 59, 0.5);
+            margin: 0 auto 1.5rem;
+            min-height: 120px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .box::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .box:hover::before {
+            opacity: 1;
+        }
+
+        .content-box {
+            box-sizing: content-box;
+            border-color: #dc2626;
+        }
+
+        .border-box {
+            box-sizing: border-box;
+            border-color: #10b981;
+        }
+
+        .box p {
+            margin: 0.3rem 0;
+            font-size: 0.9rem;
+            color: #94a3b8;
+            position: relative;
+            z-index: 1;
+        }
+
+        .box .result {
+            margin-top: 1rem;
+            font-size: 1.1rem;
+            color: #60a5fa;
+            font-weight: 600;
+        }
+
+        .calculation {
+            background: rgba(30, 41, 59, 0.5);
+            padding: 1rem;
+            border-radius: 12px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .calculation p {
+            margin: 0 0 0.5rem 0;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .calculation code {
+            display: block;
+            background: rgba(10, 14, 39, 0.5);
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            line-height: 1.8;
+            color: #94a3b8;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .calculation strong {
+            color: #60a5fa;
+            font-size: 1.2em;
+        }
+
+        .explanation,
+        .best-practice,
+        .interactive-demo {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 2rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .explanation h2,
+        .best-practice h2,
+        .interactive-demo h2 {
+            color: #e2e8f0;
+            margin: 0 0 1.5rem 0;
+            font-size: 1.75rem;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+        }
+
+        .benefit {
+            padding: 1.5rem;
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .benefit:hover {
+            transform: translateY(-5px);
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
+        }
+
+        .benefit h3 {
+            margin: 0 0 0.5rem 0;
+            color: #34d399;
+            font-size: 1rem;
+        }
+
+        .benefit p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #94a3b8;
+        }
+
+        .best-practice pre {
+            background: rgba(10, 14, 39, 0.8);
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 12px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .best-practice pre code {
+            background: none;
+            color: #34d399;
+            font-size: 0.95rem;
+            line-height: 1.8;
+            border: none;
+        }
+
+        .tip {
+            background: rgba(59, 130, 246, 0.1);
+            padding: 1rem;
+            border-radius: 12px;
+            border-left: 4px solid #3b82f6;
+            margin: 1rem 0 0 0;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .controls label {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .controls input[type="range"] {
+            flex: 1;
+            height: 8px;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 5px;
+            outline: none;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .controls input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 2px 10px rgba(59, 130, 246, 0.5);
+        }
+
+        .controls input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            cursor: pointer;
+            border-radius: 50%;
+            border: none;
+            box-shadow: 0 2px 10px rgba(59, 130, 246, 0.5);
+        }
+
+        .controls span {
+            display: inline-block;
+            min-width: 70px;
+            color: #60a5fa;
+            font-weight: 700;
+        }
+
+        .demo-boxes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .demo-box {
+            box-sizing: content-box;
+            width: 200px;
+            padding: 20px;
+            border: 10px solid #dc2626;
+            background: rgba(30, 41, 59, 0.5);
+            margin: 0 auto;
+            text-align: center;
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .demo-box::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            border-radius: 12px;
+            z-index: -1;
+            opacity: 0.5;
+        }
+
+        .demo-border-box {
+            box-sizing: border-box;
+            border-color: #10b981;
+        }
+
+        .demo-border-box::before {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .demo-box p {
+            margin: 0.5rem 0;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        @media (max-width: 768px) {
+            .comparison-grid,
+            .demo-boxes,
+            .benefits-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .box {
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Box-Sizing Comparison</h1>
+        <p class="intro">Ambas cajas tienen <code>width: 200px</code>, <code>padding: 20px</code> y <code>border: 10px solid</code></p>
+        <p class="author">Por Sebastián Salazar</p>
+        
+        <div class="comparison-grid">
+            <!-- Content-Box -->
+            <div class="box-wrapper">
+                <h2>❌ content-box (por defecto)</h2>
+                <div class="box content-box">
+                    <p><strong>Width declarado:</strong> 200px</p>
+                    <p><strong>Padding:</strong> 20px</p>
+                    <p><strong>Border:</strong> 10px</p>
+                    <p class="result"><strong>Tamaño total:</strong> 260px!</p>
+                </div>
+                <div class="calculation">
+                    <p>📐 Cálculo del tamaño:</p>
+                    <code>
+                        200px (width)<br>
+                        + 20px (padding-left)<br>
+                        + 20px (padding-right)<br>
+                        + 10px (border-left)<br>
+                        + 10px (border-right)<br>
+                        = <strong>260px</strong> total
+                    </code>
+                </div>
+            </div>
+
+            <!-- Border-Box -->
+            <div class="box-wrapper">
+                <h2>✅ border-box (recomendado)</h2>
+                <div class="box border-box">
+                    <p><strong>Width declarado:</strong> 200px</p>
+                    <p><strong>Padding:</strong> 20px</p>
+                    <p><strong>Border:</strong> 10px</p>
+                    <p class="result"><strong>Tamaño total:</strong> 200px ✨</p>
+                </div>
+                <div class="calculation">
+                    <p>📐 Cálculo del tamaño:</p>
+                    <code>
+                        200px (width total)<br>
+                        El padding y border<br>
+                        se restan del width<br>
+                        <br>
+                        = <strong>200px</strong> total ✅
+                    </code>
+                </div>
+            </div>
+        </div>
+
+        <!-- Explicación -->
+        <div class="explanation">
+            <h2>💡 ¿Por qué usar border-box?</h2>
+            <div class="benefits-grid">
+                <div class="benefit">
+                    <h3>✅ Predecible</h3>
+                    <p>Si dices width: 200px, el elemento mide exactamente 200px</p>
+                </div>
+                <div class="benefit">
+                    <h3>✅ Responsive</h3>
+                    <p>Perfecto para layouts con porcentajes y grid</p>
+                </div>
+                <div class="benefit">
+                    <h3>✅ Fácil de Mantener</h3>
+                    <p>No tienes que recalcular al cambiar padding o border</p>
+                </div>
+                <div class="benefit">
+                    <h3>✅ Estándar Moderno</h3>
+                    <p>Todos los frameworks modernos lo usan</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Best Practice -->
+        <div class="best-practice">
+            <h2>⭐ Best Practice: Aplícalo Globalmente</h2>
+            <pre><code>/* Al inicio de tu CSS */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* Ahora TODOS los elementos usan border-box */</code></pre>
+            <p class="tip">💡 <strong>Tip:</strong> Incluye esto en todos tus proyectos desde el inicio!</p>
+        </div>
+
+        <!-- Demo Interactiva -->
+        <div class="interactive-demo">
+            <h2>🎮 Demo Interactiva</h2>
+            <p>Ajusta los valores y observa la diferencia:</p>
+            <div class="controls">
+                <label>
+                    Width: <span id="widthValue">200px</span>
+                    <input type="range" id="widthSlider" min="100" max="400" value="200">
+                </label>
+                <label>
+                    Padding: <span id="paddingValue">20px</span>
+                    <input type="range" id="paddingSlider" min="0" max="50" value="20">
+                </label>
+                <label>
+                    Border: <span id="borderValue">10px</span>
+                    <input type="range" id="borderSlider" min="0" max="30" value="10">
+                </label>
+            </div>
+            <div class="demo-boxes">
+                <div class="demo-box" id="demoContentBox">
+                    <p>content-box</p>
+                    <p id="totalContentBox">Total: 260px</p>
+                </div>
+                <div class="demo-box demo-border-box" id="demoBorderBox">
+                    <p>border-box</p>
+                    <p id="totalBorderBox">Total: 200px</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const widthSlider = document.getElementById('widthSlider');
+        const paddingSlider = document.getElementById('paddingSlider');
+        const borderSlider = document.getElementById('borderSlider');
+
+        const widthValue = document.getElementById('widthValue');
+        const paddingValue = document.getElementById('paddingValue');
+        const borderValue = document.getElementById('borderValue');
+
+        const demoContentBox = document.getElementById('demoContentBox');
+        const demoBorderBox = document.getElementById('demoBorderBox');
+
+        const totalContentBox = document.getElementById('totalContentBox');
+        const totalBorderBox = document.getElementById('totalBorderBox');
+
+        function updateBoxes() {
+            const width = parseInt(widthSlider.value);
+            const padding = parseInt(paddingSlider.value);
+            const border = parseInt(borderSlider.value);
+            
+            widthValue.textContent = `${width}px`;
+            paddingValue.textContent = `${padding}px`;
+            borderValue.textContent = `${border}px`;
+            
+            [demoContentBox, demoBorderBox].forEach(box => {
+                box.style.width = `${width}px`;
+                box.style.padding = `${padding}px`;
+                box.style.borderWidth = `${border}px`;
+            });
+            
+            const contentBoxTotal = width + (padding * 2) + (border * 2);
+            const borderBoxTotal = width;
+            
+            totalContentBox.textContent = `Total: ${contentBoxTotal}px`;
+            totalBorderBox.textContent = `Total: ${borderBoxTotal}px`;
+        }
+
+        widthSlider.addEventListener('input', updateBoxes);
+        paddingSlider.addEventListener('input', updateBoxes);
+        borderSlider.addEventListener('input', updateBoxes);
+
+        updateBoxes();
+
+        console.log('📦 Box-sizing demo por Sebastián Salazar');
+        console.log('🎮 Ajusta los sliders para ver la diferencia!');
+    </script>
+</body>
+</html>

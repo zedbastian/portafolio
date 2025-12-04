@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetroBox | Planes y Soluciones</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+            background: #0a0e27;
+            min-height: 100vh;
+            padding: 2rem;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            font-size: clamp(2rem, 5vw, 2.5rem);
+            text-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
+            font-weight: 800;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            text-align: center;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .author {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 3rem;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Card Container */
+        .card {
+            position: relative;
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 20px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 20px 60px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Badge Posicionado */
+        .badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            z-index: 10;
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+            font-weight: bold;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            animation: badgeBounce 0.5s ease;
+        }
+
+        @keyframes badgeBounce {
+            0% {
+                transform: scale(0);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Variantes de badges */
+        .badge-new {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .badge-popular {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            font-size: 1rem;
+            padding: 0.6rem 1.2rem;
+            animation: badgePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .badge-pro {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+            color: white;
+            border: 2px solid #a78bfa;
+        }
+
+        .badge-enterprise {
+            background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+            color: #60a5fa;
+            border: 2px solid #3b82f6;
+        }
+
+        .badge-limited {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            color: white;
+            font-size: 0.65rem;
+            padding: 0.4rem 0.8rem;
+            animation: badgeShake 3s ease-in-out infinite;
+        }
+
+        @keyframes badgeShake {
+            0%, 100% {
+                transform: rotate(0deg);
+            }
+            25% {
+                transform: rotate(-3deg);
+            }
+            75% {
+                transform: rotate(3deg);
+            }
+        }
+
+        .badge-bestseller {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+        }
+
+        /* Card Image */
+        .card-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-image::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, rgba(59, 130, 246, 0.2) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover .card-image::before {
+            opacity: 1;
+        }
+
+        /* Card Content */
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .card-content h3 {
+            color: #e2e8f0;
+            margin-bottom: 0.8rem;
+            font-size: 1.3rem;
+        }
+
+        .card-content p {
+            color: #94a3b8;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        /* Features List */
+        .features {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .features li {
+            color: #94a3b8;
+            padding: 0.5rem 0;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .features li::before {
+            content: '✓';
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        /* Card Footer */
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
+            color: white;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 0.7rem 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, rgba(139, 92, 246, 0.3) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn:hover::before {
+            opacity: 1;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.5);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
+            .cards-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .badge {
+                top: 0.7rem;
+                right: 0.7rem;
+                font-size: 0.7rem;
+                padding: 0.4rem 0.8rem;
+            }
+            
+            .badge-popular {
+                font-size: 0.9rem;
+                padding: 0.5rem 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card-content {
+                padding: 1rem;
+            }
+            
+            .card-content h3 {
+                font-size: 1.1rem;
+            }
+            
+            .card-content p {
+                font-size: 0.9rem;
+            }
+            
+            .price {
+                font-size: 1.3rem;
+            }
+            
+            .btn {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⛽ PetroBox</h1>
+        <p class="subtitle">Planes y Soluciones para tu Estación de Servicio</p>
+        <p class="author">Por Sebastián Salazar</p>
+        
+        <div class="cards-grid">
+            <!-- Plan Básico -->
+            <div class="card">
+                <span class="badge badge-new">NUEVO</span>
+                <div class="card-image">
+                    📊
+                </div>
+                <div class="card-content">
+                    <h3>Plan Básico</h3>
+                    <p>Ideal para estaciones pequeñas que inician su digitalización.</p>
+                    <ul class="features">
+                        <li>Control de inventarios</li>
+                        <li>Hasta 2 surtidores</li>
+                        <li>Reportes básicos</li>
+                        <li>Soporte por email</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">$49/mes</span>
+                        <button class="btn">Comenzar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Plan Profesional -->
+            <div class="card">
+                <span class="badge badge-popular">⭐ POPULAR</span>
+                <div class="card-image">
+                    💼
+                </div>
+                <div class="card-content">
+                    <h3>Plan Profesional</h3>
+                    <p>Solución completa para estaciones en crecimiento.</p>
+                    <ul class="features">
+                        <li>Todo del plan Básico</li>
+                        <li>Hasta 10 surtidores</li>
+                        <li>App móvil incluida</li>
+                        <li>Soporte prioritario 24/7</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">$149/mes</span>
+                        <button class="btn">Comenzar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Plan Pro -->
+            <div class="card">
+                <span class="badge badge-pro">PRO</span>
+                <div class="card-image">
+                    🚀
+                </div>
+                <div class="card-content">
+                    <h3>Plan Pro</h3>
+                    <p>Tecnología avanzada para maximizar tu operación.</p>
+                    <ul class="features">
+                        <li>Surtidores ilimitados</li>
+                        <li>IA predictiva</li>
+                        <li>Múltiples sucursales</li>
+                        <li>Integración API</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">$299/mes</span>
+                        <button class="btn">Comenzar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Oferta Limitada -->
+            <div class="card">
+                <span class="badge badge-limited">¡Solo esta semana!</span>
+                <div class="card-image">
+                    🎯
+                </div>
+                <div class="card-content">
+                    <h3>Módulo Anti-Fraude</h3>
+                    <p>Protege tu inversión con detección en tiempo real.</p>
+                    <ul class="features">
+                        <li>Detección de anomalías</li>
+                        <li>Alertas instantáneas</li>
+                        <li>Reportes de seguridad</li>
+                        <li>Integración con planes</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">$99/mes</span>
+                        <button class="btn">Agregar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enterprise -->
+            <div class="card">
+                <span class="badge badge-enterprise">ENTERPRISE</span>
+                <div class="card-image">
+                    🏢
+                </div>
+                <div class="card-content">
+                    <h3>Plan Enterprise</h3>
+                    <p>Solución personalizada para grandes operaciones.</p>
+                    <ul class="features">
+                        <li>Personalización total</li>
+                        <li>Infraestructura dedicada</li>
+                        <li>Gerente de cuenta</li>
+                        <li>SLA garantizado</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">Custom</span>
+                        <button class="btn">Contactar</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Más Vendido -->
+            <div class="card">
+                <span class="badge badge-bestseller">★ MÁS VENDIDO</span>
+                <div class="card-image">
+                    📱
+                </div>
+                <div class="card-content">
+                    <h3>App Fidelización</h3>
+                    <p>Aumenta ventas con programa de lealtad digital.</p>
+                    <ul class="features">
+                        <li>Programa de puntos</li>
+                        <li>Cupones digitales</li>
+                        <li>Marketing automático</li>
+                        <li>Dashboard analytics</li>
+                    </ul>
+                    <div class="card-footer">
+                        <span class="price">$79/mes</span>
+                        <button class="btn">Agregar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
