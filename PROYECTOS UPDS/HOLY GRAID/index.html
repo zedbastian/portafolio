@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PetroBox | Dashboard</title>
+    <title>PetroBox - Gestión de Combustible</title>
     <style>
         * {
             margin: 0;
@@ -12,95 +12,60 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
-            background: #0a0e27;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* Holy Grail Layout con Grid */
+        /* HOLY GRAIL LAYOUT CON GRID */
         .holy-grail {
             display: grid;
             grid-template-areas:
                 "header header header"
                 "nav main sidebar"
                 "footer footer footer";
-            grid-template-columns: 250px 1fr 300px;
+            grid-template-columns: 220px 1fr 250px;
             grid-template-rows: auto 1fr auto;
             min-height: 100vh;
-            gap: 1.5rem;
-            padding: 1.5rem;
-            position: relative;
+            gap: 1rem;
+            padding: 1rem;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
         }
 
-        .holy-grail::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .holy-grail > * {
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Header */
         .header {
             grid-area: header;
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(59, 130, 246, 0.2);
+            background: linear-gradient(135deg, #e63946 0%, #d62828 100%);
             color: white;
             padding: 2rem;
             text-align: center;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(230, 57, 70, 0.3);
         }
 
         .header h1 {
-            font-size: 2rem;
+            font-size: 2.5rem;
             margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
         }
 
         .header p {
-            color: #94a3b8;
-            font-size: 1rem;
+            font-size: 1.1rem;
+            opacity: 0.95;
         }
 
-        .author {
-            color: #64748b;
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-        }
-
-        /* Navigation */
         .nav {
             grid-area: nav;
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(59, 130, 246, 0.2);
+            background: white;
             padding: 1.5rem;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
         .nav h3 {
-            color: #e2e8f0;
-            margin-bottom: 1.5rem;
-            font-size: 1.1rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            color: #e63946;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
         }
 
         .nav ul {
@@ -108,224 +73,119 @@
         }
 
         .nav li {
-            margin: 0.5rem 0;
+            margin: 0.75rem 0;
         }
 
         .nav a {
-            color: #94a3b8;
+            color: #333;
             text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-            font-weight: 500;
+            display: block;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
         }
 
-        .nav a:hover,
-        .nav a.active {
-            background: rgba(59, 130, 246, 0.1);
-            color: #60a5fa;
-            border-left: 3px solid #3b82f6;
+        .nav a:hover {
+            background: #fff5f5;
+            border-left-color: #e63946;
+            transform: translateX(5px);
         }
 
-        .nav-icon {
-            font-size: 1.2rem;
-        }
-
-        /* Main Content */
         .main {
             grid-area: main;
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(59, 130, 246, 0.2);
+            background: white;
             padding: 2rem;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-            overflow-y: auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
         .main h2 {
-            color: #e2e8f0;
+            color: #e63946;
             margin-bottom: 1.5rem;
-            font-size: 1.75rem;
-        }
-
-        .main h2 span {
-            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-size: 2rem;
         }
 
         .main p {
             line-height: 1.8;
-            color: #94a3b8;
-            margin-bottom: 1rem;
+            color: #555;
+            margin-bottom: 1.5rem;
+            font-size: 1.05rem;
         }
 
-        /* Stats Grid */
-        .stats-grid {
+        .stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
-            margin: 2rem 0;
+            margin-top: 2rem;
         }
 
         .stat-card {
-            background: rgba(30, 41, 59, 0.5);
-            border: 1px solid rgba(59, 130, 246, 0.2);
+            background: linear-gradient(135deg, #e63946 0%, #d62828 100%);
+            color: white;
             padding: 1.5rem;
-            border-radius: 15px;
-            transition: all 0.3s ease;
+            border-radius: 10px;
+            text-align: center;
         }
 
-        .stat-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(59, 130, 246, 0.5);
-            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
-        }
-
-        .stat-label {
-            color: #94a3b8;
-            font-size: 0.9rem;
+        .stat-card h3 {
+            font-size: 2rem;
             margin-bottom: 0.5rem;
         }
 
-        .stat-value {
-            color: #e2e8f0;
-            font-size: 2rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* Recent Activity */
-        .activity-list {
-            list-style: none;
-            margin-top: 1.5rem;
-        }
-
-        .activity-item {
-            background: rgba(30, 41, 59, 0.5);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            padding: 1rem;
-            border-radius: 10px;
-            margin-bottom: 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .activity-icon {
-            font-size: 1.5rem;
-        }
-
-        .activity-content h4 {
-            color: #e2e8f0;
-            font-size: 0.95rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .activity-content p {
-            color: #64748b;
-            font-size: 0.85rem;
+        .stat-card p {
+            color: rgba(255,255,255,0.9);
             margin: 0;
         }
 
-        /* Sidebar */
         .sidebar {
             grid-area: sidebar;
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(59, 130, 246, 0.2);
+            background: white;
             padding: 1.5rem;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-            overflow-y: auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
         .sidebar h3 {
-            color: #e2e8f0;
-            margin-bottom: 1.5rem;
-            font-size: 1.1rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            color: #e63946;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
         }
 
         .widget {
-            background: rgba(30, 41, 59, 0.5);
-            border: 1px solid rgba(59, 130, 246, 0.2);
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe5e5 100%);
             padding: 1.25rem;
             margin-bottom: 1rem;
-            border-radius: 15px;
-            transition: all 0.3s ease;
-        }
-
-        .widget:hover {
-            transform: translateY(-3px);
-            border-color: rgba(59, 130, 246, 0.4);
+            border-radius: 10px;
+            border-left: 4px solid #e63946;
         }
 
         .widget h4 {
-            color: #60a5fa;
-            margin-bottom: 0.75rem;
-            font-size: 1rem;
+            color: #d62828;
+            margin-bottom: 0.5rem;
         }
 
         .widget p {
-            color: #94a3b8;
-            font-size: 0.9rem;
-            line-height: 1.6;
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.5;
         }
 
-        .widget-stat {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 0.75rem;
-        }
-
-        .widget-label {
-            color: #94a3b8;
-            font-size: 0.85rem;
-        }
-
-        .widget-value {
-            color: #60a5fa;
-            font-weight: 700;
-            font-size: 1.1rem;
-        }
-
-        /* Footer */
         .footer {
             grid-area: footer;
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            color: #64748b;
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
+            color: white;
             padding: 1.5rem;
             text-align: center;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .holy-grail {
-                grid-template-areas:
-                    "header header"
-                    "nav main"
-                    "sidebar sidebar"
-                    "footer footer";
-                grid-template-columns: 220px 1fr;
-                grid-template-rows: auto 1fr auto auto;
-            }
+        .footer p {
+            opacity: 0.9;
         }
 
+        /* RESPONSIVE */
         @media (max-width: 768px) {
             .holy-grail {
                 grid-template-areas:
@@ -336,11 +196,13 @@
                     "footer";
                 grid-template-columns: 1fr;
                 grid-template-rows: auto auto 1fr auto auto;
-                padding: 1rem;
-                gap: 1rem;
             }
 
-            .stats-grid {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .stats {
                 grid-template-columns: 1fr;
             }
         }
@@ -349,114 +211,63 @@
 <body>
     <div class="holy-grail">
         <header class="header">
-            <h1>⛽ PetroBox Dashboard</h1>
-            <p>Sistema de Gestión de Combustible</p>
-            <p class="author">Por Sebastián Salazar</p>
+            <h1>⛽ PetroBox</h1>
+            <p>Sistema de Gestión de Combustible Inteligente</p>
         </header>
         
         <nav class="nav">
-            <h3>Navegación</h3>
+            <h3>📊 Menú Principal</h3>
             <ul>
-                <li><a href="#" class="active"><span class="nav-icon">📊</span> Dashboard</a></li>
-                <li><a href="#"><span class="nav-icon">⛽</span> Inventarios</a></li>
-                <li><a href="#"><span class="nav-icon">💳</span> Ventas</a></li>
-                <li><a href="#"><span class="nav-icon">📱</span> Reportes</a></li>
-                <li><a href="#"><span class="nav-icon">👥</span> Clientes</a></li>
-                <li><a href="#"><span class="nav-icon">⚙️</span> Configuración</a></li>
+                <li><a href="#">🏠 Dashboard</a></li>
+                <li><a href="#">⛽ Inventario</a></li>
+                <li><a href="#">🚛 Suministros</a></li>
+                <li><a href="#">📈 Reportes</a></li>
+                <li><a href="#">👥 Clientes</a></li>
+                <li><a href="#">⚙️ Configuración</a></li>
             </ul>
         </nav>
         
         <main class="main">
             <article>
-                <h2>Resumen de <span>Operaciones</span></h2>
-                <p>Bienvenido al panel de control de PetroBox. Aquí puedes monitorear en tiempo real todas las operaciones de tu estación de servicio.</p>
+                <h2>Panel de Control</h2>
+                <p>Bienvenido a PetroBox, tu solución completa para la gestión eficiente de combustible. Monitorea inventarios en tiempo real, controla suministros y genera reportes detallados de consumo.</p>
+                <p>Con nuestra plataforma, podrás optimizar costos, reducir desperdicios y mantener un control total sobre tu operación de combustibles.</p>
                 
-                <div class="stats-grid">
+                <div class="stats">
                     <div class="stat-card">
-                        <div class="stat-label">Ventas Hoy</div>
-                        <div class="stat-value">$12,458</div>
+                        <h3>15,847 L</h3>
+                        <p>Inventario Total</p>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">Litros Vendidos</div>
-                        <div class="stat-value">8,742</div>
+                        <h3>234</h3>
+                        <p>Transacciones Hoy</p>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-label">Transacciones</div>
-                        <div class="stat-value">247</div>
+                        <h3>98.5%</h3>
+                        <p>Eficiencia</p>
                     </div>
                 </div>
-
-                <h3 style="color: #e2e8f0; margin-top: 2rem; margin-bottom: 1rem;">Actividad Reciente</h3>
-                <ul class="activity-list">
-                    <li class="activity-item">
-                        <span class="activity-icon">💳</span>
-                        <div class="activity-content">
-                            <h4>Venta procesada</h4>
-                            <p>Surtidor 3 - $45.20 - Hace 2 min</p>
-                        </div>
-                    </li>
-                    <li class="activity-item">
-                        <span class="activity-icon">📦</span>
-                        <div class="activity-content">
-                            <h4>Alerta de inventario</h4>
-                            <p>Tanque 1 - 15% restante - Hace 15 min</p>
-                        </div>
-                    </li>
-                    <li class="activity-item">
-                        <span class="activity-icon">✅</span>
-                        <div class="activity-content">
-                            <h4>Reabastecimiento completado</h4>
-                            <p>Tanque 2 - 10,000 litros - Hace 1 hora</p>
-                        </div>
-                    </li>
-                </ul>
             </article>
         </main>
         
         <aside class="sidebar">
-            <h3>Información</h3>
-            
+            <h3>📢 Alertas y Notificaciones</h3>
             <div class="widget">
-                <h4>🎯 Estado del Sistema</h4>
-                <div class="widget-stat">
-                    <span class="widget-label">Uptime</span>
-                    <span class="widget-value">99.9%</span>
-                </div>
-                <div class="widget-stat">
-                    <span class="widget-label">Surtidores Activos</span>
-                    <span class="widget-value">8/8</span>
-                </div>
+                <h4>⚠️ Nivel Bajo</h4>
+                <p>Tanque #3 - Diésel: 15% de capacidad</p>
             </div>
-            
             <div class="widget">
-                <h4>📊 Rendimiento Semanal</h4>
-                <div class="widget-stat">
-                    <span class="widget-label">Ventas</span>
-                    <span class="widget-value">+18%</span>
-                </div>
-                <div class="widget-stat">
-                    <span class="widget-label">Clientes</span>
-                    <span class="widget-value">+12%</span>
-                </div>
+                <h4>✅ Suministro Programado</h4>
+                <p>Entrega prevista para mañana - 5000L</p>
             </div>
-            
             <div class="widget">
-                <h4>⚠️ Alertas</h4>
-                <p>1 tanque requiere reabastecimiento en las próximas 24 horas</p>
-            </div>
-
-            <div class="widget">
-                <h4>👥 Soporte</h4>
-                <p>¿Necesitas ayuda? Contacta con nuestro equipo 24/7</p>
-                <div class="widget-stat">
-                    <span class="widget-label">Chat</span>
-                    <span class="widget-value">En línea</span>
-                </div>
+                <h4>📊 Reporte Mensual</h4>
+                <p>Disponible para descargar - Noviembre 2024</p>
             </div>
         </aside>
         
         <footer class="footer">
-            <p>&copy; 2025 PetroBox | Desarrollado por Sebastián Salazar | Todos los derechos reservados</p>
+            <p>&copy; 2024 PetroBox. Gestión de Combustible Inteligente. Todos los derechos reservados.</p>
         </footer>
     </div>
 </body>
