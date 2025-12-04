@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetroBox - Galería de Servicios</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* PAGE HEADER */
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
+        }
+
+        .page-header h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .page-header p {
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* FILTER BUTTONS */
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.8rem 2rem;
+            border: 2px solid #e63946;
+            background: transparent;
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: linear-gradient(135deg, #e63946 0%, #d62828 100%);
+            border-color: #e63946;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(230, 57, 70, 0.4);
+        }
+
+        /* CARDS GRID RESPONSIVE - LA CLAVE */
+        .cards-grid {
+            /* 
+               repeat(auto-fit, minmax(300px, 1fr))
+               - auto-fit: Crea tantas columnas como quepan
+               - minmax(300px, 1fr): Mínimo 300px, máximo 1 fracción
+               - Totalmente responsive automáticamente
+            */
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        /* CARD DESIGN */
+        .card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(230, 57, 70, 0.4);
+        }
+
+        /* CARD IMAGE */
+        .card img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover img {
+            transform: scale(1.1);
+        }
+
+        /* CARD CONTENT */
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .card-tag {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            background: linear-gradient(135deg, #e63946 0%, #d62828 100%);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+
+        .card-content h3 {
+            color: #333;
+            font-size: 1.4rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .card-content p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.8rem;
+            background: linear-gradient(135deg, #e63946 0%, #d62828 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(230, 57, 70, 0.5);
+        }
+
+        /* RESPONSIVE - Tablet */
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .page-header p {
+                font-size: 1rem;
+            }
+            
+            .cards-grid {
+                gap: 1.5rem;
+            }
+            
+            .filter-buttons {
+                gap: 0.5rem;
+            }
+            
+            .filter-btn {
+                padding: 0.6rem 1.5rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* RESPONSIVE - Mobile */
+        @media (max-width: 480px) {
+            body {
+                padding: 1rem;
+            }
+            
+            .page-header h1 {
+                font-size: 2rem;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            /* En móviles se convierte automáticamente en 1 columna */
+            .cards-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .card-content {
+                padding: 1rem;
+            }
+            
+            .card-content h3 {
+                font-size: 1.2rem;
+            }
+            
+            .filter-buttons {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .filter-btn {
+                width: 100%;
+            }
+        }
+
+        /* Hidden card for filtering */
+        .card.hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="page-header">
+            <h1>⛽ PetroBox Servicios</h1>
+            <p>Soluciones integrales de gestión de combustible</p>
+        </header>
+
+        <div class="filter-buttons">
+            <button class="filter-btn active" data-filter="all">Todos</button>
+            <button class="filter-btn" data-filter="inventario">Inventario</button>
+            <button class="filter-btn" data-filter="suministro">Suministro</button>
+            <button class="filter-btn" data-filter="analitica">Analítica</button>
+        </div>
+
+        <div class="cards-grid">
+            <div class="card" data-category="inventario">
+                <img src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop" alt="Control de Inventario">
+                <div class="card-content">
+                    <span class="card-tag">Inventario</span>
+                    <h3>Control de Inventario</h3>
+                    <p>Monitoreo en tiempo real de niveles de combustible con alertas automáticas y predicción de reabastecimiento.</p>
+                    <button class="btn">Ver Más</button>
+                </div>
+            </div>
+
+            <div class="card" data-category="suministro">
+                <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=400&h=300&fit=crop" alt="Gestión de Flotas">
+                <div class="card-content">
+                    <span class="card-tag">Suministro</span>
+                    <h3>Gestión de Flotas</h3>
+                    <p>Administración eficiente del consumo de combustible por vehículo con reportes detallados de eficiencia.</p>
+                    <button class="btn">Ver Más</button>
+                </div>
+            </div>
+
+            <div class="card" data-category="analitica">
+                <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop" alt="Dashboard Analítico">
+                <div class="card-content">
+                    <span class="card-tag">Analítica</span>
+                    <h3>Dashboard Analítico</h3>
+                    <p>Visualización de datos en tiempo real con gráficos interactivos y KPIs personalizables para tu negocio.</p>
+                    <button class="btn">Ver Más</button>
+                </div>
+            </div>
+
+            <div class="card" data-category="suministro">
+                <img src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=400&h=300&fit=crop" alt="Programación de Suministros">
+                <div class="card-content">
+                    <span class="card-tag">Suministro</span>
+                    <h3>Programación de Suministros</h3>
+                    <p>Sistema automatizado de pedidos y programación de entregas basado en consumo histórico y predicciones.</p>
+                    <button class="btn">Ver Más</button>
+                </div>
+            </div>
+
+            <div class="card" data-category="analitica">
+                <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop" alt="Reportes y Auditoría">
+                <div class="card-content">
+                    <span class="card-tag">Analítica</span>
+                    <h3>Reportes y Auditoría</h3>
+                    <p>Generación automática de reportes fiscales, auditorías de consumo y análisis de costos operativos.</p>
+                    <button class="btn">Ver Más</button>
+                </div>
+            </div>
+
+            <div class="card" data-category="inventario">
+                <img src="https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?w=400&h=300&fit=crop" alt="Control de Acceso">
+                <div class="card-content">
+                    <span class="card-tag">Inventario</span>
+                    <h3>Control de Acceso</h3>
+                    <p>Sistema de seguridad con tarjetas RFID, control de usuarios y registro detallado de cada transacción.</p>
+                    <button class="btn">Ver Más</button>
+                </div>
+            </div>
+
+            <div class="card" data-category="analitica">
+                <img src="https://images.unsplash.com/photo-1558655146-d09347e92766?w=400&h=300&fit=crop" alt="Integración ERP">
+                <div class="card-content">
+                    <span class="card-tag">Analítica</span>
+                    <h3>Integración ERP</h3>
+                    <p>Conexión directa con sistemas ERP y contables para sincronización automática de datos financieros.</p>
+                    <button class="btn">Ver Más</button>
+                </div>
+            </div>
+
+            <div class="card" data-category="suministro">
+                <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=400&h=300&fit=crop" alt="Optimización de Costos">
+                <div class="card-content">
+                    <span class="card-tag">Suministro</span>
+                    <h3>Optimización de Costos</h3>
+                    <p>Análisis predictivo para reducir desperdicios, optimizar rutas y minimizar costos operativos de combustible.</p>
+                    <button class="btn">Ver Más</button>
+                </div>
+            </div>
+
+            <div class="card" data-category="inventario">
+                <img src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=400&h=300&fit=crop" alt="App Móvil">
+                <div class="card-content">
+                    <span class="card-tag">Inventario</span>
+                    <h3>App Móvil</h3>
+                    <p>Aplicación móvil para supervisores con acceso a inventarios, alertas push y aprobación de pedidos remotos.</p>
+                    <button class="btn">Ver Más</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Funcionalidad de filtrado
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const cards = document.querySelectorAll('.card');
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remover clase active de todos los botones
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                
+                // Agregar clase active al botón clickeado
+                button.classList.add('active');
+                
+                // Obtener el filtro seleccionado
+                const filter = button.getAttribute('data-filter');
+                
+                // Filtrar las cards
+                cards.forEach(card => {
+                    if (filter === 'all') {
+                        card.classList.remove('hidden');
+                    } else {
+                        const category = card.getAttribute('data-category');
+                        if (category === filter) {
+                            card.classList.remove('hidden');
+                        } else {
+                            card.classList.add('hidden');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
