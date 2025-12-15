@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sebastián Salazar - Portfolio</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #8b5cf6;
+            --accent: #ec4899;
+            --dark: #0f172a;
+            --light: #f8fafc;
+        }
+
+        * {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--dark);
+            color: var(--light);
+            overflow-x: hidden;
+        }
+
+        /* Navbar moderna con glassmorphism */
+        .navbar {
+            backdrop-filter: blur(10px);
+            background: rgba(15, 23, 42, 0.8) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            font-weight: 500;
+            position: relative;
+            padding: 0.5rem 1rem !important;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 80%;
+        }
+
+        /* Hero Section con animaciones */
+        .hero-section {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.2), transparent);
+            border-radius: 50%;
+            top: -250px;
+            right: -250px;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .hero-section::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(236, 72, 153, 0.2), transparent);
+            border-radius: 50%;
+            bottom: -200px;
+            left: -200px;
+            animation: float 8s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, -30px) scale(1.1); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: fadeInUp 1s ease;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: #94a3b8;
+            margin-bottom: 2rem;
+            animation: fadeInUp 1s ease 0.2s backwards;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-image {
+            position: relative;
+            animation: fadeInUp 1s ease 0.4s backwards;
+        }
+
+        .hero-image img {
+            border-radius: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 3px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-modern {
+            padding: 0.875rem 2rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            border: none;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            animation: fadeInUp 1s ease 0.6s backwards;
+        }
+
+        .btn-primary-modern {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-primary-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-outline-modern {
+            background: transparent;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-outline-modern:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        /* Section moderna */
+        .section-modern {
+            padding: 5rem 0;
+            background: var(--dark);
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            margin: 1rem auto 0;
+            border-radius: 2px;
+        }
+
+        /* Cards modernas con glassmorphism */
+        .card-modern {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            height: 100%;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-modern::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .card-modern:hover {
+            transform: translateY(-10px);
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-modern:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Projects con hover effect */
+        .project-card {
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 1.5rem;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.4s ease;
+            height: 100%;
+        }
+
+        .project-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .project-image {
+            position: relative;
+            overflow: hidden;
+            height: 250px;
+        }
+
+        .project-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .project-card:hover .project-image img {
+            transform: scale(1.1);
+        }
+
+        .project-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.9), rgba(236, 72, 153, 0.9));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .project-card:hover .project-overlay {
+            opacity: 1;
+        }
+
+        .project-body {
+            padding: 1.5rem;
+        }
+
+        .badge-modern {
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+
+        /* Contact form moderna */
+        .form-control-modern {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.75rem;
+            padding: 0.875rem 1.25rem;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .form-control-modern:focus {
+            background: rgba(30, 41, 59, 0.7);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            color: white;
+        }
+
+        .form-label {
+            color: #94a3b8;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Footer moderna */
+        .footer-modern {
+            background: rgba(15, 23, 42, 0.8);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2rem 0;
+        }
+
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            transform: translateY(-3px);
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-terminal"></i> Sebastián Salazar
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#about">Sobre Mí</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#skills">Habilidades</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#projects">Proyectos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact">Contacto</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 hero-content">
+                    <h1 class="hero-title">Hola, soy<br><span class="gradient-text">Sebastián Salazar</span></h1>
+                    <p class="hero-subtitle">Desarrollador Full Stack creando experiencias digitales excepcionales con código limpio y diseño moderno</p>
+                    <div class="d-flex gap-3">
+                        <a href="#projects" class="btn btn-modern btn-primary-modern">Ver Proyectos</a>
+                        <a href="#contact" class="btn btn-modern btn-outline-modern">Contactar</a>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center hero-image">
+                    <div style="position: relative;">
+                        <div style="position: absolute; inset: -20px; background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(236, 72, 153, 0.3)); border-radius: 2rem; filter: blur(30px);"></div>
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQ9j6fL59cuzD6jN1UkY-4oVDQ4XZzojS8iA&s" alt="Sebastián Salazar" class="img-fluid" style="position: relative; z-index: 1;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="section-modern">
+        <div class="container">
+            <h2 class="section-title">Sobre Mí</h2>
+            <div class="row align-items-center g-5">
+                <div class="col-lg-5">
+                    <div class="card-modern">
+                        <h4 class="gradient-text mb-3 fw-bold">Mi Historia</h4>
+                        <p style="color: #94a3b8; line-height: 1.8;">
+                            Comencé mi viaje en el desarrollo web hace 5 años, impulsado por la pasión de 
+                            convertir ideas en realidades digitales. Cada proyecto es una oportunidad para 
+                            aprender, innovar y superar límites.
+                        </p>
+                        <div class="mt-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                <span style="color: #cbd5e1;">+50 Proyectos Completados</span>
+                            </div>
+                            <div class="d-flex align-items-center mb-3">
+                                <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                <span style="color: #cbd5e1;">+30 Clientes Satisfechos</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                <span style="color: #cbd5e1;">Disponible para Freelance</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="row g-4">
+                        <div class="col-6">
+                            <div class="card-modern text-center" style="padding: 1.5rem;">
+                                <h3 class="gradient-text fw-bold mb-2">5+</h3>
+                                <p class="mb-0" style="color: #94a3b8;">Años de Experiencia</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="card-modern text-center" style="padding: 1.5rem;">
+                                <h3 class="gradient-text fw-bold mb-2">50+</h3>
+                                <p class="mb-0" style="color: #94a3b8;">Proyectos Exitosos</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="card-modern text-center" style="padding: 1.5rem;">
+                                <h3 class="gradient-text fw-bold mb-2">30+</h3>
+                                <p class="mb-0" style="color: #94a3b8;">Clientes Felices</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="card-modern text-center" style="padding: 1.5rem;">
+                                <h3 class="gradient-text fw-bold mb-2">100%</h3>
+                                <p class="mb-0" style="color: #94a3b8;">Compromiso</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="section-modern" style="background: #1e293b;">
+        <div class="container">
+            <h2 class="section-title">Stack Tecnológico</h2>
+            <div class="row g-4 mb-5">
+                <div class="col-md-3 col-6">
+                    <div class="card-modern text-center" style="padding: 1.5rem;">
+                        <i class="bi bi-filetype-html" style="font-size: 2.5rem; color: #e34c26;"></i>
+                        <h6 class="mt-3 mb-0 fw-bold">HTML5</h6>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="card-modern text-center" style="padding: 1.5rem;">
+                        <i class="bi bi-filetype-css" style="font-size: 2.5rem; color: #264de4;"></i>
+                        <h6 class="mt-3 mb-0 fw-bold">CSS3</h6>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="card-modern text-center" style="padding: 1.5rem;">
+                        <i class="bi bi-filetype-js" style="font-size: 2.5rem; color: #f0db4f;"></i>
+                        <h6 class="mt-3 mb-0 fw-bold">JavaScript</h6>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="card-modern text-center" style="padding: 1.5rem;">
+                        <i class="bi bi-bootstrap-fill" style="font-size: 2.5rem; color: #7952b3;"></i>
+                        <h6 class="mt-3 mb-0 fw-bold">Bootstrap</h6>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="card-modern text-center" style="padding: 1.5rem;">
+                        <i class="bi bi-react" style="font-size: 2.5rem; color: #61dafb;"></i>
+                        <h6 class="mt-3 mb-0 fw-bold">React</h6>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="card-modern text-center" style="padding: 1.5rem;">
+                        <i class="bi bi-node-plus-fill" style="font-size: 2.5rem; color: #68a063;"></i>
+                        <h6 class="mt-3 mb-0 fw-bold">Node.js</h6>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="card-modern text-center" style="padding: 1.5rem;">
+                        <i class="bi bi-database-fill" style="font-size: 2.5rem; color: #00ed64;"></i>
+                        <h6 class="mt-3 mb-0 fw-bold">MongoDB</h6>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="card-modern text-center" style="padding: 1.5rem;">
+                        <i class="bi bi-git" style="font-size: 2.5rem; color: #f34f29;"></i>
+                        <h6 class="mt-3 mb-0 fw-bold">Git</h6>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card-modern">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="bi bi-palette card-icon" style="font-size: 2rem; margin-bottom: 0; margin-right: 1rem;"></i>
+                            <h5 class="mb-0 fw-bold">Diseño UI/UX</h5>
+                        </div>
+                        <p style="color: #94a3b8;">Experiencias visuales que conectan con los usuarios y convierten visitantes en clientes</p>
+                        <div class="mt-3">
+                            <span class="badge" style="background: rgba(99, 102, 241, 0.2); color: #a5b4fc; margin-right: 0.5rem;">Figma</span>
+                            <span class="badge" style="background: rgba(99, 102, 241, 0.2); color: #a5b4fc; margin-right: 0.5rem;">Adobe XD</span>
+                            <span class="badge" style="background: rgba(99, 102, 241, 0.2); color: #a5b4fc;">Sketch</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card-modern">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="bi bi-code-square card-icon" style="font-size: 2rem; margin-bottom: 0; margin-right: 1rem;"></i>
+                            <h5 class="mb-0 fw-bold">Frontend</h5>
+                        </div>
+                        <p style="color: #94a3b8;">Interfaces responsivas y modernas con las últimas tecnologías del mercado</p>
+                        <div class="mt-3">
+                            <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #6ee7b7; margin-right: 0.5rem;">React</span>
+                            <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #6ee7b7; margin-right: 0.5rem;">Vue</span>
+                            <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #6ee7b7;">Tailwind</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card-modern">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="bi bi-server card-icon" style="font-size: 2rem; margin-bottom: 0; margin-right: 1rem;"></i>
+                            <h5 class="mb-0 fw-bold">Backend</h5>
+                        </div>
+                        <p style="color: #94a3b8;">Arquitecturas escalables y APIs robustas para aplicaciones de alto rendimiento</p>
+                        <div class="mt-3">
+                            <span class="badge" style="background: rgba(236, 72, 153, 0.2); color: #f9a8d4; margin-right: 0.5rem;">Node.js</span>
+                            <span class="badge" style="background: rgba(236, 72, 153, 0.2); color: #f9a8d4; margin-right: 0.5rem;">Express</span>
+                            <span class="badge" style="background: rgba(236, 72, 153, 0.2); color: #f9a8d4;">MongoDB</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="section-modern">
+        <div class="container">
+            <h2 class="section-title">Mis Proyectos</h2>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="project-card">
+                        <div class="project-image">
+                            <img src="https://images.unsplash.com/photo-1557821552-17105176677c?w=400&h=250&fit=crop" alt="E-commerce Platform">
+                            <div class="project-overlay">
+                                <a href="#" class="btn btn-modern btn-primary-modern">Ver Detalles</a>
+                            </div>
+                        </div>
+                        <div class="project-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="badge badge-modern" style="background: linear-gradient(135deg, #6366f1, #8b5cf6);">Web App</span>
+                                <div>
+                                    <i class="bi bi-star-fill" style="color: #fbbf24; font-size: 0.9rem;"></i>
+                                    <span style="color: #94a3b8; font-size: 0.9rem;">4.9</span>
+                                </div>
+                            </div>
+                            <h5 class="mb-2 fw-bold">ShopHub Platform</h5>
+                            <p style="color: #94a3b8; font-size: 0.9rem;">E-commerce completo con carrito, pagos seguros y panel administrativo</p>
+                            <div class="mt-3">
+                                <span class="badge" style="background: rgba(255, 255, 255, 0.1); color: #cbd5e1; font-size: 0.7rem; margin-right: 0.3rem;">React</span>
+                                <span class="badge" style="background: rgba(255, 255, 255, 0.1); color: #cbd5e1; font-size: 0.7rem; margin-right: 0.3rem;">Node.js</span>
+                                <span class="badge" style="background: rgba(255, 255, 255, 0.1); color: #cbd5e1; font-size: 0.7rem;">Stripe</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="project-card">
+                        <div class="project-image">
+                            <img src="https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=400&h=250&fit=crop" alt="Task Manager">
+                            <div class="project-overlay">
+                                <a href="#" class="btn btn-modern btn-primary-modern">Ver Detalles</a>
+                            </div>
+                        </div>
+                        <div class="project-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="badge badge-modern" style="background: linear-gradient(135deg, #10b981, #059669);">Mobile</span>
+                                <div>
+                                    <i class="bi bi-star-fill" style="color: #fbbf24; font-size: 0.9rem;"></i>
+                                    <span style="color: #94a3b8; font-size: 0.9rem;">4.8</span>
+                                </div>
+                            </div>
+                            <h5 class="mb-2 fw-bold">TaskFlow Pro</h5>
+                            <p style="color: #94a3b8; font-size: 0.9rem;">App móvil de productividad con sincronización en la nube</p>
+                            <div class="mt-3">
+                                <span class="badge" style="background: rgba(255, 255, 255, 0.1); color: #cbd5e1; font-size: 0.7rem; margin-right: 0.3rem;">React Native</span>
+                                <span class="badge" style="background: rgba(255, 255, 255, 0.1); color: #cbd5e1; font-size: 0.7rem; margin-right: 0.3rem;">Firebase</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="project-card">
+                        <div class="project-image">
+                            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=250&fit=crop" alt="Analytics Dashboard">
+                            <div class="project-overlay">
+                                <a href="#" class="btn btn-modern btn-primary-modern">Ver Detalles</a>
+                            </div>
+                        </div>
+                        <div class="project-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="badge badge-modern" style="background: linear-gradient(135deg, #ec4899, #be185d);">Dashboard</span>
+                                <div>
+                                    <i class="bi bi-star-fill" style="color: #fbbf24; font-size: 0.9rem;"></i>
+                                    <span style="color: #94a3b8; font-size: 0.9rem;">5.0</span>
+                                </div>
+                            </div>
+                            <h5 class="mb-2 fw-bold">DataViz Analytics</h5>
+                            <p style="color: #94a3b8; font-size: 0.9rem;">Dashboard interactivo con gráficos y métricas en tiempo real</p>
+                            <div class="mt-3">
+                                <span class="badge" style="background: rgba(255, 255, 255, 0.1); color: #cbd5e1; font-size: 0.7rem; margin-right: 0.3rem;">Vue.js</span>
+                                <span class="badge" style="background: rgba(255, 255, 255, 0.1); color: #cbd5e1; font-size: 0.7rem; margin-right: 0.3rem;">D3.js</span>
+                                <span class="badge" style="background: rgba(255, 255, 255, 0.1); color: #cbd5e1; font-size: 0.7rem;">WebSocket</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="section-modern" style="background: #1e293b;">
+        <div class="container">
+            <h2 class="section-title">Contacto</h2>
+            <div class="row">
+                <div class="col-lg-6 mx-auto">
+                    <form>
+                        <div class="mb-4">
+                            <label for="name" class="form-label">Nombre</label>
+                            <input type="text" class="form-control form-control-modern" id="name" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control form-control-modern" id="email" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="message" class="form-label">Mensaje</label>
+                            <textarea class="form-control form-control-modern" id="message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-modern btn-primary-modern w-100">Enviar Mensaje</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer-modern">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                    <p class="mb-0" style="color: #94a3b8;">&copy; Diciembre 2025 Sebastián Salazar (UPDS). Todos los derechos reservados.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <a href="#" class="social-link me-2"><i class="bi bi-github"></i></a>
+                    <a href="#" class="social-link me-2"><i class="bi bi-linkedin"></i></a>
+                    <a href="#" class="social-link"><i class="bi bi-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
