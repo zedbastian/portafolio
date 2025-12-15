@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Juego de Memoria Moderno</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+            background: #0a0e27;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+            body::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.2) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.2) 0%, transparent 50%);
+                pointer-events: none;
+                animation: pulse 8s ease-in-out infinite;
+            }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Info Panel */
+        .info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .info-item {
+            text-align: center;
+        }
+
+            .info-item p {
+                color: #94a3b8;
+                font-size: 0.85rem;
+                margin-bottom: 0.5rem;
+                font-weight: 600;
+            }
+
+            .info-item span {
+                display: block;
+                font-size: 1.8rem;
+                font-weight: 800;
+                background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+        #resetBtn {
+            grid-column: 1 / -1;
+            padding: 1rem;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(59, 130, 246, 0.3);
+            margin-top: 0.5rem;
+        }
+
+            #resetBtn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 30px rgba(59, 130, 246, 0.5);
+            }
+
+        /* Game Board */
+        .board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            padding: 1.5rem;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Cards */
+        .card {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%);
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            color: transparent;
+            font-size: 2.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            border-radius: 15px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3), 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+            .card::before {
+                content: '?';
+                position: absolute;
+                font-size: 3rem;
+                color: #60a5fa;
+                transition: all 0.4s ease;
+            }
+
+            .card:hover:not(.revealed):not(.matched) {
+                transform: scale(1.05);
+                border-color: rgba(59, 130, 246, 0.5);
+                box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3), 0 8px 25px rgba(59, 130, 246, 0.4);
+            }
+
+            .card.revealed {
+                background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
+                border-color: rgba(59, 130, 246, 0.6);
+                color: white;
+                transform: rotateY(0deg);
+                box-shadow: 0 10px 30px rgba(59, 130, 246, 0.5), inset 0 -2px 10px rgba(0, 0, 0, 0.2);
+            }
+
+                .card.revealed::before {
+                    opacity: 0;
+                    transform: scale(0);
+                }
+
+            .card.matched {
+                background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                border-color: rgba(16, 185, 129, 0.6);
+                color: white;
+                cursor: default;
+                animation: matchPulse 0.6s ease;
+                box-shadow: 0 10px 30px rgba(16, 185, 129, 0.5), inset 0 -2px 10px rgba(0, 0, 0, 0.2);
+            }
+
+                .card.matched::before {
+                    content: '✓';
+                    opacity: 0.3;
+                    font-size: 4rem;
+                    color: white;
+                    transform: scale(1);
+                }
+
+        @keyframes matchPulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        /* Modal de Victoria */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+            .modal.show {
+                display: flex;
+            }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-content {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(59, 130, 246, 0.4);
+            border-radius: 30px;
+            padding: 3rem 2.5rem;
+            text-align: center;
+            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal-content p {
+            color: #94a3b8;
+            font-size: 1.1rem;
+            margin: 0.5rem 0;
+        }
+
+        .modal-content strong {
+            color: #e2e8f0;
+            font-size: 1.3rem;
+        }
+
+        .modal-btn {
+            margin-top: 2rem;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.3);
+        }
+
+            .modal-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 30px rgba(16, 185, 129, 0.5);
+            }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .board {
+                gap: 0.75rem;
+                padding: 1rem;
+            }
+
+            .card {
+                font-size: 2rem;
+            }
+
+                .card::before {
+                    font-size: 2rem;
+                }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Juego de Memoria</h1>
+        <p class="subtitle">Por Sebastián Salazar</p>
+
+        <div class="info">
+            <div class="info-item">
+                <p>⏱️ Tiempo</p>
+                <span id="timer">00:00</span>
+            </div>
+            <div class="info-item">
+                <p>🔄 Movimientos</p>
+                <span id="moves">0</span>
+            </div>
+            <div class="info-item">
+                <p>⭐ Puntuación</p>
+                <span id="score">0</span>
+            </div>
+            <button id="resetBtn">🔄 Reiniciar Juego</button>
+        </div>
+
+        <div id="gameBoard" class="board"></div>
+    </div>
+
+    <!-- Modal de Victoria -->
+    <div id="winModal" class="modal">
+        <div class="modal-content">
+            <h2>🎉</h2>
+            <h2>¡Ganaste!</h2>
+            <p>Movimientos: <strong id="finalMoves">0</strong></p>
+            <p>Tiempo: <strong id="finalTime">00:00</strong></p>
+            <p>Puntuación: <strong id="finalScore">0</strong></p>
+            <button class="modal-btn" onclick="closeModalAndRestart()">Jugar de Nuevo</button>
+        </div>
+    </div>
+
+    <script>
+        // ------------ VARIABLES ------------
+        const board = document.getElementById("gameBoard");
+        const timerEl = document.getElementById("timer");
+        const movesEl = document.getElementById("moves");
+        const scoreEl = document.getElementById("score");
+        const resetBtn = document.getElementById("resetBtn");
+        const winModal = document.getElementById("winModal");
+        const finalMoves = document.getElementById("finalMoves");
+        const finalTime = document.getElementById("finalTime");
+        const finalScore = document.getElementById("finalScore");
+
+        let icons = ["🎨", "🌟", "🍇", "🍓", "🍉", "🍊", "🎯", "🚀"];
+        let cards = [];
+        let firstCard = null;
+        let secondCard = null;
+        let lock = false;
+
+        let moves = 0;
+        let score = 0;
+        let time = 0;
+        let timer = null;
+
+        // ------------ INICIALIZAR JUEGO ------------
+        function startGame() {
+            // Reiniciar variables
+            moves = 0;
+            score = 0;
+            time = 0;
+            firstCard = null;
+            secondCard = null;
+            lock = false;
+
+            movesEl.textContent = moves;
+            scoreEl.textContent = score;
+            timerEl.textContent = "00:00";
+
+            clearInterval(timer);
+            startTimer();
+
+            // Duplicar iconos y mezclarlos
+            cards = [...icons, ...icons];
+            shuffle(cards);
+
+            // Renderizar tablero
+            board.innerHTML = "";
+            cards.forEach((icon, index) => {
+                const card = document.createElement("div");
+                card.classList.add("card");
+                card.dataset.icon = icon;
+                card.dataset.index = index;
+                card.textContent = "";
+
+                board.appendChild(card);
+            });
+        }
+
+        // ------------ SHUFFLE ------------
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // ------------ TEMPORIZADOR ------------
+        function startTimer() {
+            timer = setInterval(() => {
+                time++;
+                const min = String(Math.floor(time / 60)).padStart(2, "0");
+                const sec = String(time % 60).padStart(2, "0");
+                timerEl.textContent = `${min}:${sec}`;
+            }, 1000);
+        }
+
+        // ------------ MANEJAR CLICK EN CARTA ------------
+        board.addEventListener("click", (e) => {
+            const card = e.target;
+
+            if (!card.classList.contains("card")) return;
+            if (lock) return;
+            if (card.classList.contains("revealed")) return;
+            if (card.classList.contains("matched")) return;
+
+            revealCard(card);
+
+            if (!firstCard) {
+                firstCard = card;
+            } else {
+                secondCard = card;
+                checkMatch();
+            }
+        });
+
+        // ------------ REVELAR CARTA ------------
+        function revealCard(card) {
+            card.classList.add("revealed");
+            card.textContent = card.dataset.icon;
+        }
+
+        // ------------ OCULTAR CARTA ------------
+        function hideCard(card) {
+            card.classList.remove("revealed");
+            card.textContent = "";
+        }
+
+        // ------------ VERIFICAR PAREJA ------------
+        function checkMatch() {
+            lock = true;
+            moves++;
+            movesEl.textContent = moves;
+
+            const isMatch = firstCard.dataset.icon === secondCard.dataset.icon;
+
+            if (isMatch) {
+                firstCard.classList.add("matched");
+                secondCard.classList.add("matched");
+
+                score += 10;
+                scoreEl.textContent = score;
+
+                resetSelection();
+                checkWin();
+            } else {
+                setTimeout(() => {
+                    hideCard(firstCard);
+                    hideCard(secondCard);
+                    resetSelection();
+                }, 900);
+            }
+        }
+
+        function resetSelection() {
+            firstCard = null;
+            secondCard = null;
+            lock = false;
+        }
+
+        // ------------ VERIFICAR SI GANÓ ------------
+        function checkWin() {
+            const matchedCards = document.querySelectorAll(".matched");
+            if (matchedCards.length === cards.length) {
+                clearInterval(timer);
+
+                // Mostrar modal con resultados
+                setTimeout(() => {
+                    finalMoves.textContent = moves;
+                    finalTime.textContent = timerEl.textContent;
+                    finalScore.textContent = score;
+                    winModal.classList.add("show");
+                }, 500);
+            }
+        }
+
+        // ------------ CERRAR MODAL Y REINICIAR ------------
+        function closeModalAndRestart() {
+            winModal.classList.remove("show");
+            startGame();
+        }
+
+        // ------------ REINICIAR ------------
+        resetBtn.addEventListener("click", startGame);
+
+        // Inicio automático
+        startGame();
+    </script>
+</body>
+</html>
