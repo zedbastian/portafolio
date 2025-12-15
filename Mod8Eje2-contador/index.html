@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Contador interactivo moderno con JavaScript">
+    <title>Contador Interactivo Moderno</title>
+    <style>
+        /* Reset y Variables */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-positive: #10b981;
+            --color-negative: #dc2626;
+            --color-neutral: #60a5fa;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+            background: #0a0e27;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.2) 0%, transparent 50%);
+            pointer-events: none;
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Contenedor */
+        .container {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            padding: 3rem 2.5rem;
+            border-radius: 30px;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .titulo {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitulo {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Display del Contador */
+        .contador-display {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.8) 100%);
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            padding: 3rem 2rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                inset 0 2px 10px rgba(0, 0, 0, 0.3),
+                0 5px 20px rgba(59, 130, 246, 0.1);
+            transition: var(--transition);
+        }
+
+        .contador-display::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+            animation: rotate 10s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .numero {
+            font-size: 5rem;
+            font-weight: 900;
+            color: var(--color-neutral);
+            display: block;
+            transition: var(--transition);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Estados del número */
+        .numero.positivo {
+            color: var(--color-positive);
+            animation: pulsoEntrada 0.4s ease;
+            text-shadow: 0 0 30px rgba(16, 185, 129, 0.5);
+        }
+
+        .numero.negativo {
+            color: var(--color-negative);
+            animation: pulsoEntrada 0.4s ease;
+            text-shadow: 0 0 30px rgba(220, 38, 38, 0.5);
+        }
+
+        .numero.neutro {
+            color: var(--color-neutral);
+            text-shadow: 0 0 30px rgba(96, 165, 250, 0.5);
+        }
+
+        @keyframes pulsoEntrada {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+
+        /* Cambio de borde según estado */
+        .contador-display.bg-positivo {
+            border-color: rgba(16, 185, 129, 0.5);
+            box-shadow: 
+                inset 0 2px 10px rgba(0, 0, 0, 0.3),
+                0 5px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .contador-display.bg-negativo {
+            border-color: rgba(220, 38, 38, 0.5);
+            box-shadow: 
+                inset 0 2px 10px rgba(0, 0, 0, 0.3),
+                0 5px 20px rgba(220, 38, 38, 0.3);
+        }
+
+        .contador-display.bg-neutro {
+            border-color: rgba(96, 165, 250, 0.5);
+            box-shadow: 
+                inset 0 2px 10px rgba(0, 0, 0, 0.3),
+                0 5px 20px rgba(96, 165, 250, 0.3);
+        }
+
+        /* Botones */
+        .botones {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn {
+            padding: 1.2rem 1.5rem;
+            border: none;
+            border-radius: 15px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn .icono {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(16, 185, 129, 0.5);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            box-shadow: 0 5px 20px rgba(220, 38, 38, 0.3);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(220, 38, 38, 0.5);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            box-shadow: 0 5px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.5);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* Botones Bonus */
+        .botones-bonus {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .btn-small {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            transition: var(--transition);
+            min-width: 80px;
+        }
+
+        .btn-success-light {
+            background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            box-shadow: 0 3px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-success-light:hover {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 6px 25px rgba(16, 185, 129, 0.5);
+        }
+
+        .btn-danger-light {
+            background: linear-gradient(135deg, #dc2626 0%, #f59e0b 100%);
+            border: 1px solid rgba(220, 38, 38, 0.3);
+            box-shadow: 0 3px 15px rgba(220, 38, 38, 0.3);
+        }
+
+        .btn-danger-light:hover {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 6px 25px rgba(220, 38, 38, 0.5);
+        }
+
+        /* Información */
+        .info {
+            padding: 1rem 1.5rem;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 12px;
+            border-left: 4px solid #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .info p {
+            color: #94a3b8;
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .info strong {
+            color: #e2e8f0;
+            font-weight: 700;
+        }
+
+        /* Atajos de teclado */
+        .shortcuts {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: rgba(30, 41, 59, 0.3);
+            border-radius: 10px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .shortcuts-title {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .shortcuts-list {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .shortcut-key {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .container {
+                padding: 2rem 1.5rem;
+            }
+            
+            .titulo {
+                font-size: 1.5rem;
+            }
+            
+            .numero {
+                font-size: 3.5rem;
+            }
+            
+            .botones {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="titulo">Contador Interactivo</h1>
+        <p class="subtitulo">Por Sebastián Salazar</p>
+        
+        <!-- Display del contador -->
+        <div class="contador-display">
+            <span id="contador" class="numero">0</span>
+        </div>
+        
+        <!-- Botones de control -->
+        <div class="botones">
+            <button id="btnDecrementar" class="btn btn-danger">
+                <span class="icono">-</span>
+                Decrementar
+            </button>
+            
+            <button id="btnResetear" class="btn btn-secondary">
+                <span class="icono">↻</span>
+                Resetear
+            </button>
+            
+            <button id="btnIncrementar" class="btn btn-success">
+                <span class="icono">+</span>
+                Incrementar
+            </button>
+        </div>
+        
+        <!-- Botones Bonus -->
+        <div class="botones-bonus">
+            <button id="btnDecrementar5" class="btn-small btn-danger-light">-5</button>
+            <button id="btnIncrementar5" class="btn-small btn-success-light">+5</button>
+        </div>
+        
+        <!-- Información -->
+        <div class="info">
+            <p id="mensaje">El contador está en <strong>cero</strong></p>
+        </div>
+
+        <!-- Atajos de teclado -->
+        <div class="shortcuts">
+            <div class="shortcuts-title">Atajos de teclado</div>
+            <div class="shortcuts-list">
+                <span class="shortcut-key">↑ +1</span>
+                <span class="shortcut-key">↓ -1</span>
+                <span class="shortcut-key">+ +5</span>
+                <span class="shortcut-key">- -5</span>
+                <span class="shortcut-key">R Reset</span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // ===== SELECCIÓN DE ELEMENTOS =====
+        const contadorElement = document.getElementById("contador");
+        const btnIncrementar = document.getElementById("btnIncrementar");
+        const btnDecrementar = document.getElementById("btnDecrementar");
+        const btnResetear = document.getElementById("btnResetear");
+        const btnIncrementar5 = document.getElementById("btnIncrementar5");
+        const btnDecrementar5 = document.getElementById("btnDecrementar5");
+        const mensajeElement = document.getElementById("mensaje");
+        const displayContador = document.querySelector(".contador-display");
+
+        // ===== VARIABLE DEL CONTADOR =====
+        let contador = parseInt(localStorage.getItem("contador")) || 0;
+
+        // ===== FUNCIONES =====
+
+        function actualizarDisplay() {
+            contadorElement.textContent = contador;
+
+            // Remover clases previas
+            contadorElement.classList.remove("positivo", "negativo", "neutro");
+            displayContador.classList.remove("bg-positivo", "bg-negativo", "bg-neutro");
+
+            // Determinar estado y aplicar clases
+            if (contador > 0) {
+                contadorElement.classList.add("positivo");
+                displayContador.classList.add("bg-positivo");
+                actualizarMensaje("positivo");
+            } else if (contador < 0) {
+                contadorElement.classList.add("negativo");
+                displayContador.classList.add("bg-negativo");
+                actualizarMensaje("negativo");
+            } else {
+                contadorElement.classList.add("neutro");
+                displayContador.classList.add("bg-neutro");
+                actualizarMensaje("neutro");
+            }
+
+            // Guardar en LocalStorage
+            localStorage.setItem("contador", contador);
+        }
+
+        function actualizarMensaje(estado) {
+            let mensaje = "";
+
+            switch (estado) {
+                case "positivo":
+                    mensaje = `El contador está en <strong>positivo</strong> (+${contador})`;
+                    break;
+                case "negativo":
+                    mensaje = `El contador está en <strong>negativo</strong> (${contador})`;
+                    break;
+                case "neutro":
+                    mensaje = "El contador está en <strong>cero</strong>";
+                    break;
+            }
+
+            mensajeElement.innerHTML = mensaje;
+        }
+
+        function incrementar(cantidad = 1) {
+            contador += cantidad;
+            actualizarDisplay();
+        }
+
+        function decrementar(cantidad = 1) {
+            contador -= cantidad;
+            actualizarDisplay();
+        }
+
+        function resetear() {
+            contador = 0;
+            actualizarDisplay();
+        }
+
+        // ===== EVENT LISTENERS =====
+
+        btnIncrementar.addEventListener("click", () => incrementar(1));
+        btnDecrementar.addEventListener("click", () => decrementar(1));
+        btnResetear.addEventListener("click", resetear);
+        btnIncrementar5.addEventListener("click", () => incrementar(5));
+        btnDecrementar5.addEventListener("click", () => decrementar(5));
+
+        // Atajos de teclado
+        document.addEventListener("keydown", (e) => {
+            switch (e.key) {
+                case "ArrowUp":
+                    incrementar(1);
+                    break;
+                case "ArrowDown":
+                    decrementar(1);
+                    break;
+                case "r":
+                case "R":
+                    resetear();
+                    break;
+                case "+":
+                    incrementar(5);
+                    break;
+                case "-":
+                    decrementar(5);
+                    break;
+            }
+        });
+
+        // ===== INICIALIZACIÓN =====
+        actualizarDisplay();
+
+        console.log("🎮 Contador Interactivo iniciado");
+        console.log("💡 Atajos de teclado:");
+        console.log("  ↑ : +1");
+        console.log("  ↓ : -1");
+        console.log("  + : +5");
+        console.log("  - : -5");
+        console.log("  R : Resetear");
+    </script>
+</body>
+</html>
