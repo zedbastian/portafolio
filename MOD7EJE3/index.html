@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetroBox | Galería Masonry</title>
+    <style>
+        /* Reset básico */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #0a0e27;
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+            padding: 2rem 1rem;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            max-width: 1400px;
+            margin: 0 auto 3rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            margin-bottom: 0.5rem;
+            font-weight: 800;
+        }
+
+        .header h1 span {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        .author {
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Grid Masonry con Dense */
+        .gallery-grid {
+            display: grid;
+            
+            /* 1. Columnas automáticas responsive
+               - repeat(auto-fill, ...): Crea tantas columnas como quepan
+               - minmax(240px, 1fr): Mínimo 240px, máximo el espacio disponible */
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+
+            /* 2. Filas pequeñas (La clave del Masonry)
+               Creamos filas invisibles de 10px de alto para tener precisión
+               en el tamaño de cada tarjeta */
+            grid-auto-rows: 10px;
+
+            /* 3. ALGORITMO DENSE (Rellena huecos automáticamente)
+               Busca tarjetas pequeñas que vengan después y rellena
+               los huecos vacíos de arriba - ¡ESTO ES MASONRY! */
+            grid-auto-flow: dense;
+
+            gap: 1.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Las tarjetas */
+        .card {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+            
+            /* Por defecto: ocupa 26 filas de 10px (260px aprox) */
+            grid-row: span 26;
+
+            /* Flexbox interno para layout de la tarjeta */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 20px 50px rgba(59, 130, 246, 0.3);
+        }
+
+        /* VARIANTES DE TAMAÑO (asignadas por JS) */
+        
+        /* Tarjeta Alta */
+        .card-tall {
+            grid-row: span 42; /* Más alta */
+        }
+
+        /* Tarjeta Ancha */
+        .card-wide {
+            grid-column: span 2; /* Ocupa 2 columnas */
+            grid-row: span 26;
+        }
+
+        /* Tarjeta Grande (Alta y Ancha) */
+        .card-big {
+            grid-column: span 2;
+            grid-row: span 42;
+        }
+
+        /* Badge de categoría */
+        .badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            z-index: 10;
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.5);
+        }
+
+        /* Figure (contenedor de imagen) */
+        figure {
+            margin: 0;
+            flex-grow: 1; /* Ocupa todo el espacio disponible */
+            height: 100%;
+            position: relative;
+        }
+
+        /* Imágenes */
+        img {
+            width: 100%;
+            height: 100%;
+            
+            /* CLAVE: object-fit cover 
+               La imagen actúa como un fondo, se recorta si es necesario
+               pero NUNCA se deforma/estira */
+            object-fit: cover;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+
+        .card:hover img {
+            transform: scale(1.1);
+        }
+
+        /* Contenido de la tarjeta */
+        .card-content {
+            padding: 1.5rem;
+            background: rgba(15, 23, 42, 0.9);
+        }
+
+        .card-content h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+
+        .card-content p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem 0.5rem;
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+
+            /* En móvil, todas las tarjetas anchas se vuelven normales */
+            .card-wide,
+            .card-big {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>⛽ <span>PetroBox</span> Masonry</h1>
+        <p>Galería con CSS Grid Dense - Layout Dinámico</p>
+        <p class="author">Por Sebastián Salazar</p>
+    </div>
+
+    <main class="gallery-grid">
+        
+        <article class="card">
+            <figure>
+                <span class="badge">Estaciones</span>
+                <img src="https://images.unsplash.com/photo-1545262810-77515befe149?w=400&h=400&fit=crop" alt="Estación">
+            </figure>
+            <div class="card-content">
+                <h3>Estaciones Modernas</h3>
+                <p>Tecnología de última generación.</p>
+            </div>
+        </article>
+
+        <article class="card">
+            <figure>
+                <span class="badge">Tanques</span>
+                <img src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=400&h=400&fit=crop" alt="Tanques">
+            </figure>
+            <div class="card-content">
+                <h3>Sistema de Tanques</h3>
+                <p>Almacenamiento seguro y eficiente.</p>
+            </div>
+        </article>
+
+        <article class="card">
+            <figure>
+                <span class="badge">Tech</span>
+                <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=600&fit=crop" alt="Tecnología">
+            </figure>
+            <div class="card-content">
+                <h3>Control Digital</h3>
+                <p>Monitoreo en tiempo real de todas las operaciones.</p>
+            </div>
+        </article>
+
+        <article class="card">
+            <figure>
+                <span class="badge">Logística</span>
+                <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=400&h=400&fit=crop" alt="Camiones">
+            </figure>
+            <div class="card-content">
+                <h3>Distribución</h3>
+                <p>Red de logística nacional.</p>
+            </div>
+        </article>
+
+        <article class="card">
+            <figure>
+                <span class="badge">Mobile</span>
+                <img src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&h=800&fit=crop" alt="App">
+            </figure>
+            <div class="card-content">
+                <h3>App PetroBox</h3>
+                <p>Gestión completa desde tu dispositivo móvil.</p>
+            </div>
+        </article>
+
+        <article class="card">
+            <figure>
+                <span class="badge">Seguridad</span>
+                <img src="https://images.unsplash.com/photo-1563986768609-322da13575f3?w=400&h=600&fit=crop" alt="Seguridad">
+            </figure>
+            <div class="card-content">
+                <h3>Sistema Seguro</h3>
+                <p>Protección 24/7 con tecnología avanzada.</p>
+            </div>
+        </article>
+
+        <article class="card">
+            <figure>
+                <span class="badge">Analytics</span>
+                <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=400&fit=crop" alt="Dashboard">
+            </figure>
+            <div class="card-content">
+                <h3>Dashboard Analytics</h3>
+                <p>Datos y reportes en tiempo real.</p>
+            </div>
+        </article>
+
+        <article class="card">
+            <figure>
+                <span class="badge">POS</span>
+                <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=400&h=400&fit=crop" alt="POS">
+            </figure>
+            <div class="card-content">
+                <h3>Punto de Venta</h3>
+                <p>Transacciones rápidas y seguras.</p>
+            </div>
+        </article>
+
+        <article class="card">
+            <figure>
+                <span class="badge">Team</span>
+                <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&h=400&fit=crop" alt="Equipo">
+            </figure>
+            <div class="card-content">
+                <h3>Nuestro Equipo</h3>
+                <p>Profesionales dedicados y experimentados.</p>
+            </div>
+        </article>
+
+        <article class="card">
+            <figure>
+                <span class="badge">Innovation</span>
+                <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600&h=400&fit=crop" alt="Innovación">
+            </figure>
+            <div class="card-content">
+                <h3>Innovación Continua</h3>
+                <p>Liderando el futuro de la gestión de combustible.</p>
+            </div>
+        </article>
+
+        <article class="card">
+            <figure>
+                <span class="badge">Network</span>
+                <img src="https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?w=400&h=400&fit=crop" alt="Red">
+            </figure>
+            <div class="card-content">
+                <h3>Red Nacional</h3>
+                <p>Presencia en más de 500 estaciones.</p>
+            </div>
+        </article>
+
+        <article class="card">
+            <figure>
+                <span class="badge">Support</span>
+                <img src="https://images.unsplash.com/photo-1553877522-43269d4ea984?w=400&h=400&fit=crop" alt="Soporte">
+            </figure>
+            <div class="card-content">
+                <h3>Soporte 24/7</h3>
+                <p>Asistencia técnica siempre disponible.</p>
+            </div>
+        </article>
+
+    </main>
+
+    <script>
+        /* Simulación de contenido dinámico asignando clases 
+           de tamaño aleatorio a las tarjetas para ver el efecto Masonry */
+
+        // 1. Seleccionamos todas las tarjetas
+        const cards = document.querySelectorAll('.card');
+
+        // 2. Definimos las posibles variaciones de tamaño
+        const sizes = ['card-normal', 'card-tall', 'card-wide', 'card-big'];
+
+        // 3. Iteramos sobre cada tarjeta
+        cards.forEach(card => {
+            // Generamos un número aleatorio entre 0 y 3
+            const randomSize = Math.floor(Math.random() * sizes.length);
+            
+            // Si sale 0 (card-normal), no añadimos clase extra
+            // Si sale otro, añadimos la clase correspondiente (tall, wide o big)
+            if (sizes[randomSize] !== 'card-normal') {
+                card.classList.add(sizes[randomSize]);
+            }
+        });
+
+        /* NOTA TÉCNICA:
+           Al añadir estas clases, el CSS Grid detectará que algunos elementos
+           son más grandes (ocupan más 'spans'). Gracias a 'grid-auto-flow: dense',
+           el navegador calculará matemáticamente dónde encajar las piezas pequeñas
+           para rellenar los huecos que dejan las grandes - ¡EFECTO MASONRY! */
+    </script>
+</body>
+</html>
