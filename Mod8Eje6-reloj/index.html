@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reloj Digital - Tema Oscuro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15), transparent);
+            border-radius: 50%;
+            top: -400px;
+            right: -400px;
+            animation: float 15s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.15), transparent);
+            border-radius: 50%;
+            bottom: -300px;
+            left: -300px;
+            animation: float 20s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(50px, -50px) scale(1.1); }
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .clock-card {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(20px);
+            padding: 4rem;
+            border-radius: 32px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .clock-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #6366f1, #8b5cf6, transparent);
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { transform: translateX(-100%); }
+            50% { transform: translateX(100%); }
+        }
+
+        .greeting {
+            font-size: 1.4rem;
+            background: linear-gradient(135deg, #94a3b8, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            animation: fadeIn 1s ease;
+            letter-spacing: 1px;
+        }
+
+        .time-container {
+            position: relative;
+            margin: 3rem 0;
+        }
+
+        .time-display {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 1.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2rem 3rem;
+            border-radius: 24px;
+            border: 2px solid rgba(99, 102, 241, 0.3);
+            box-shadow: 
+                0 0 30px rgba(99, 102, 241, 0.2),
+                inset 0 0 20px rgba(99, 102, 241, 0.1);
+        }
+
+        .time {
+            font-size: 6rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #fff, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 8px;
+            text-shadow: 0 0 30px rgba(167, 139, 250, 0.5);
+            position: relative;
+        }
+
+        .time-separator {
+            display: inline-block;
+            animation: blink 1.5s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 49%, 100% { opacity: 1; }
+            50%, 99% { opacity: 0.3; }
+        }
+
+        .period {
+            font-size: 2rem;
+            color: #a78bfa;
+            font-weight: 700;
+            text-shadow: 0 0 20px rgba(167, 139, 250, 0.5);
+        }
+
+        .date {
+            font-size: 1.5rem;
+            color: #cbd5e1;
+            margin-bottom: 3rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2.5rem 0;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn:hover::before {
+            opacity: 1;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(99, 102, 241, 0.5);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .info-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            margin-top: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .timezone-info {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+
+        .timezone-icon {
+            font-size: 1.3rem;
+        }
+
+        .label {
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        #timezone {
+            font-family: 'Courier New', monospace;
+            color: #a78bfa;
+            font-weight: 700;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .stat-card {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(20px);
+            padding: 2rem;
+            border-radius: 24px;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 20px 50px rgba(99, 102, 241, 0.3);
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+
+        .stat-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            filter: drop-shadow(0 0 10px rgba(167, 139, 250, 0.3));
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #a78bfa, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .weather-widget {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1.2rem;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .weather-icon {
+            font-size: 1.8rem;
+            filter: drop-shadow(0 0 10px rgba(167, 139, 250, 0.3));
+        }
+
+        .weather-temp {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #e2e8f0;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .pulse-effect {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @media (max-width: 768px) {
+            .clock-card {
+                padding: 2.5rem 1.5rem;
+            }
+            
+            .greeting {
+                font-size: 1.2rem;
+            }
+            
+            .time {
+                font-size: 3.5rem;
+                letter-spacing: 4px;
+            }
+
+            .time-display {
+                padding: 1.5rem 2rem;
+            }
+            
+            .period {
+                font-size: 1.5rem;
+            }
+            
+            .date {
+                font-size: 1.2rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-bar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="clock-card">
+            <div class="greeting" id="greeting">Buenos días</div>
+            
+            <div class="time-container">
+                <div class="time-display pulse-effect">
+                    <div class="time" id="time">00<span class="time-separator">:</span>00<span class="time-separator">:</span>00</div>
+                    <div class="period" id="period">AM</div>
+                </div>
+            </div>
+            
+            <div class="date" id="date">Lunes, 1 de Enero de 2024</div>
+            
+            <div class="controls">
+                <button class="btn" id="formatBtn">
+                    <span id="formatText">Cambiar a 24h</span>
+                </button>
+            </div>
+            
+            <div class="info-bar">
+                <div class="timezone-info">
+                    <span class="timezone-icon">🌍</span>
+                    <span class="label">Zona horaria:</span>
+                    <span id="timezone">UTC-5</span>
+                </div>
+                <div class="weather-widget">
+                    <span class="weather-icon">☀️</span>
+                    <span class="weather-temp">24°C</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📅</div>
+                <div class="stat-value" id="dayOfYear">1</div>
+                <div class="stat-label">Día del año</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📆</div>
+                <div class="stat-value" id="weekNumber">1</div>
+                <div class="stat-label">Semana del año</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⏱️</div>
+                <div class="stat-value" id="secondsToday">0</div>
+                <div class="stat-label">Segundos hoy</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Elementos del DOM
+        const timeDisplay = document.getElementById('time');
+        const periodDisplay = document.getElementById('period');
+        const dateDisplay = document.getElementById('date');
+        const greetingDisplay = document.getElementById('greeting');
+        const formatBtn = document.getElementById('formatBtn');
+        const formatText = document.getElementById('formatText');
+        const timezoneDisplay = document.getElementById('timezone');
+        const dayOfYearDisplay = document.getElementById('dayOfYear');
+        const weekNumberDisplay = document.getElementById('weekNumber');
+        const secondsTodayDisplay = document.getElementById('secondsToday');
+
+        // Estado: formato de 12h o 24h
+        let is24HourFormat = false;
+
+        /**
+         * Actualizar el reloj
+         */
+        function updateClock() {
+            const now = new Date();
+            
+            // Obtener componentes de tiempo
+            let hours = now.getHours();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+            
+            // Determinar período (AM/PM)
+            const period = hours >= 12 ? 'PM' : 'AM';
+            
+            // Convertir a formato 12h si es necesario
+            if (!is24HourFormat) {
+                hours = hours % 12 || 12;
+                periodDisplay.textContent = period;
+                periodDisplay.style.display = 'block';
+            } else {
+                periodDisplay.style.display = 'none';
+            }
+            
+            // Formatear con ceros a la izquierda
+            const hoursStr = String(hours).padStart(2, '0');
+            const minutesStr = String(minutes).padStart(2, '0');
+            const secondsStr = String(seconds).padStart(2, '0');
+            
+            // Mostrar tiempo con separadores animados
+            timeDisplay.innerHTML = `${hoursStr}<span class="time-separator">:</span>${minutesStr}<span class="time-separator">:</span>${secondsStr}`;
+            
+            // Actualizar fecha
+            updateDate(now);
+            
+            // Actualizar saludo
+            updateGreeting(now.getHours());
+            
+            // Actualizar estadísticas
+            updateStats(now);
+        }
+
+        /**
+         * Actualizar la fecha
+         */
+        function updateDate(date) {
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            
+            const dateString = date.toLocaleDateString('es-ES', options);
+            dateDisplay.textContent = dateString.charAt(0).toUpperCase() + dateString.slice(1);
+        }
+
+        /**
+         * Actualizar saludo según la hora
+         */
+        function updateGreeting(hour) {
+            let greeting;
+            
+            if (hour >= 5 && hour < 12) {
+                greeting = '☀️ Buenos días';
+            } else if (hour >= 12 && hour < 19) {
+                greeting = '🌤️ Buenas tardes';
+            } else {
+                greeting = '🌙 Buenas noches';
+            }
+            
+            greetingDisplay.textContent = greeting;
+        }
+
+        /**
+         * Obtener zona horaria
+         */
+        function getTimezone() {
+            const offset = new Date().getTimezoneOffset();
+            const hours = Math.abs(Math.floor(offset / 60));
+            const minutes = Math.abs(offset % 60);
+            const sign = offset <= 0 ? '+' : '-';
+            
+            return `UTC${sign}${hours}${minutes > 0 ? ':' + String(minutes).padStart(2, '0') : ''}`;
+        }
+
+        /**
+         * Calcular día del año
+         */
+        function getDayOfYear(date) {
+            const start = new Date(date.getFullYear(), 0, 0);
+            const diff = date - start;
+            const oneDay = 1000 * 60 * 60 * 24;
+            return Math.floor(diff / oneDay);
+        }
+
+        /**
+         * Calcular número de semana
+         */
+        function getWeekNumber(date) {
+            const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+            const dayNum = d.getUTCDay() || 7;
+            d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+            const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+            return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+        }
+
+        /**
+         * Calcular segundos transcurridos hoy
+         */
+        function getSecondsToday(date) {
+            const hours = date.getHours();
+            const minutes = date.getMinutes();
+            const seconds = date.getSeconds();
+            
+            return (hours * 3600) + (minutes * 60) + seconds;
+        }
+
+        /**
+         * Actualizar estadísticas
+         */
+        function updateStats(date) {
+            dayOfYearDisplay.textContent = getDayOfYear(date);
+            weekNumberDisplay.textContent = getWeekNumber(date);
+            secondsTodayDisplay.textContent = getSecondsToday(date).toLocaleString();
+        }
+
+        /**
+         * Cambiar formato de 12h a 24h y viceversa
+         */
+        function toggleFormat() {
+            is24HourFormat = !is24HourFormat;
+            
+            if (is24HourFormat) {
+                formatText.textContent = 'Cambiar a 12h';
+            } else {
+                formatText.textContent = 'Cambiar a 24h';
+            }
+            
+            updateClock();
+        }
+
+        // Event Listener para cambiar formato
+        formatBtn.addEventListener('click', toggleFormat);
+
+        // Mostrar zona horaria
+        timezoneDisplay.textContent = getTimezone();
+
+        // Actualizar reloj inmediatamente
+        updateClock();
+
+        // Actualizar reloj cada segundo
+        setInterval(updateClock, 1000);
+
+        // Log de inicio
+        console.log('⏰ Reloj digital iniciado');
+        console.log(`Zona horaria: ${getTimezone()}`);
+        console.log(`Formato: ${is24HourFormat ? '24 horas' : '12 horas'}`);
+    </script>
+</body>
+</html>
