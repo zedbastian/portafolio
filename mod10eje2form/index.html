@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario Multi-paso - Modo Oscuro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1625 50%, #0f1419 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
+            top: -200px;
+            right: -200px;
+            border-radius: 50%;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+            bottom: -150px;
+            left: -150px;
+            border-radius: 50%;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .wizard-container {
+            background: rgba(26, 26, 42, 0.85);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5),
+                        0 0 100px rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        h1 {
+            text-align: center;
+            color: #fff;
+            margin-bottom: 2.5rem;
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .progress-bar::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: rgba(75, 85, 99, 0.3);
+            z-index: 0;
+        }
+
+        .progress-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-number {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(75, 85, 99, 0.3);
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.7rem;
+            font-weight: 700;
+            transition: all 0.4s ease;
+            border: 2px solid transparent;
+        }
+
+        .progress-step.active .step-number {
+            background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+            color: white;
+            border-color: rgba(139, 92, 246, 0.3);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+            transform: scale(1.1);
+        }
+
+        .progress-step.completed .step-number {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border-color: #10b981;
+        }
+
+        .progress-step.completed .step-number::after {
+            content: '✓';
+        }
+
+        .step-label {
+            font-size: 0.9rem;
+            color: #9ca3af;
+            font-weight: 500;
+        }
+
+        .progress-step.active .step-label {
+            color: #8b5cf6;
+        }
+
+        .progress-step.completed .step-label {
+            color: #10b981;
+        }
+
+        /* Form Steps */
+        .form-step {
+            display: none;
+        }
+
+        .form-step.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .form-step h2 {
+            color: #e5e7eb;
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.8rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.6rem;
+            color: #e5e7eb;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            background: rgba(17, 24, 39, 0.6);
+            border: 2px solid rgba(139, 92, 246, 0.2);
+            border-radius: 12px;
+            font-size: 1rem;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #6b7280;
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        select option {
+            background: #1a1a2a;
+            color: #fff;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            background: rgba(17, 24, 39, 0.8);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+        }
+
+        input.valid,
+        select.valid,
+        textarea.valid {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        input.invalid,
+        select.invalid {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .error-message {
+            display: none;
+            color: #f87171;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        .form-group.error .error-message {
+            display: block;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin-top: 0.8rem;
+        }
+
+        .checkbox-group label {
+            font-weight: normal;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            padding: 0.8rem 1rem;
+            background: rgba(17, 24, 39, 0.4);
+            border-radius: 10px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #d1d5db;
+        }
+
+        .checkbox-group label:hover {
+            border-color: rgba(139, 92, 246, 0.3);
+            background: rgba(17, 24, 39, 0.6);
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #8b5cf6;
+            cursor: pointer;
+        }
+
+        input[type="checkbox"] {
+            accent-color: #8b5cf6;
+        }
+
+        /* Summary Section */
+        .summary-section {
+            background: rgba(17, 24, 39, 0.5);
+            padding: 1.8rem;
+            border-radius: 16px;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .summary-section h3 {
+            color: #8b5cf6;
+            margin-bottom: 1.2rem;
+            font-size: 1.2rem;
+        }
+
+        .summary-section p {
+            margin: 0.5rem 0;
+            color: #d1d5db;
+            line-height: 1.6;
+        }
+
+        .summary-section strong {
+            color: #e5e7eb;
+        }
+
+        .confirmation-text {
+            color: #9ca3af;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+        }
+
+        /* Navigation Buttons */
+        .form-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2.5rem;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 1.1rem 2.5rem;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+            color: white;
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(75, 85, 99, 0.3);
+            color: #d1d5db;
+            border: 2px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(75, 85, 99, 0.5);
+            border-color: rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: rgba(26, 26, 42, 0.95);
+            padding: 3rem;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 450px;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content h2 {
+            color: #10b981;
+            margin-bottom: 1rem;
+            font-size: 2.2rem;
+        }
+
+        .modal-content p {
+            color: #d1d5db;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .wizard-container {
+                padding: 2rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .progress-bar {
+                flex-wrap: wrap;
+                gap: 1.5rem;
+            }
+            
+            .step-label {
+                font-size: 0.8rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .form-navigation {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="wizard-container">
+            <h1>Registro por Pasos</h1>
+            
+            <!-- Progress Bar -->
+            <div class="progress-bar">
+                <div class="progress-step active">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Datos Personales</div>
+                </div>
+                <div class="progress-step">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Dirección</div>
+                </div>
+                <div class="progress-step">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Preferencias</div>
+                </div>
+                <div class="progress-step">
+                    <div class="step-number">4</div>
+                    <div class="step-label">Confirmación</div>
+                </div>
+            </div>
+
+            <form id="wizardForm" novalidate>
+                <!-- Paso 1: Datos Personales -->
+                <div class="form-step active" data-step="1">
+                    <h2>Datos Personales</h2>
+                    
+                    <div class="form-group">
+                        <label for="firstName">Nombre *</label>
+                        <input type="text" id="firstName" name="firstName" placeholder="Juan" required>
+                        <span class="error-message"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lastName">Apellido *</label>
+                        <input type="text" id="lastName" name="lastName" placeholder="Pérez" required>
+                        <span class="error-message"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email *</label>
+                        <input type="email" id="email" name="email" placeholder="tu@email.com" required>
+                        <span class="error-message"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Teléfono *</label>
+                        <input type="tel" id="phone" name="phone" pattern="[0-9]{10}" placeholder="1234567890" required>
+                        <span class="error-message"></span>
+                    </div>
+                </div>
+
+                <!-- Paso 2: Dirección -->
+                <div class="form-step" data-step="2">
+                    <h2>Dirección</h2>
+                    
+                    <div class="form-group">
+                        <label for="street">Calle *</label>
+                        <input type="text" id="street" name="street" placeholder="Av. Principal #123" required>
+                        <span class="error-message"></span>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="city">Ciudad *</label>
+                            <input type="text" id="city" name="city" placeholder="Ciudad de México" required>
+                            <span class="error-message"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="zipCode">Código Postal *</label>
+                            <input type="text" id="zipCode" name="zipCode" pattern="[0-9]{5}" placeholder="12345" required>
+                            <span class="error-message"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="country">País *</label>
+                        <select id="country" name="country" required>
+                            <option value="">Selecciona un país</option>
+                            <option value="mx">México</option>
+                            <option value="es">España</option>
+                            <option value="ar">Argentina</option>
+                            <option value="co">Colombia</option>
+                        </select>
+                        <span class="error-message"></span>
+                    </div>
+                </div>
+
+                <!-- Paso 3: Preferencias -->
+                <div class="form-step" data-step="3">
+                    <h2>Preferencias</h2>
+                    
+                    <div class="form-group">
+                        <label>Intereses (Selecciona al menos uno) *</label>
+                        <div class="checkbox-group">
+                            <label>
+                                <input type="checkbox" name="interests" value="tecnologia">
+                                Tecnología
+                            </label>
+                            <label>
+                                <input type="checkbox" name="interests" value="deportes">
+                                Deportes
+                            </label>
+                            <label>
+                                <input type="checkbox" name="interests" value="musica">
+                                Música
+                            </label>
+                            <label>
+                                <input type="checkbox" name="interests" value="viajes">
+                                Viajes
+                            </label>
+                        </div>
+                        <span class="error-message"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 0.7rem; cursor: pointer;">
+                            <input type="checkbox" id="newsletter" name="newsletter">
+                            <span>Deseo recibir el newsletter</span>
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="comments">Comentarios adicionales</label>
+                        <textarea id="comments" name="comments" rows="4" placeholder="Escribe tus comentarios aquí..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Paso 4: Confirmación -->
+                <div class="form-step" data-step="4">
+                    <h2>Confirmación</h2>
+                    <p class="confirmation-text">Por favor revisa tus datos antes de enviar:</p>
+                    
+                    <div class="summary-section">
+                        <h3>Datos Personales</h3>
+                        <div id="summaryPersonal"></div>
+                    </div>
+
+                    <div class="summary-section">
+                        <h3>Dirección</h3>
+                        <div id="summaryAddress"></div>
+                    </div>
+
+                    <div class="summary-section">
+                        <h3>Preferencias</h3>
+                        <div id="summaryPreferences"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 0.7rem; cursor: pointer;">
+                            <input type="checkbox" id="terms" name="terms" required>
+                            <span>Acepto los términos y condiciones *</span>
+                        </label>
+                        <span class="error-message"></span>
+                    </div>
+                </div>
+
+                <!-- Botones de navegación -->
+                <div class="form-navigation">
+                    <button type="button" class="btn btn-secondary" id="prevBtn" style="display: none;">
+                        ← Anterior
+                    </button>
+                    <button type="button" class="btn btn-primary" id="nextBtn">
+                        Siguiente →
+                    </button>
+                    <button type="submit" class="btn btn-success" id="submitBtn" style="display: none;">
+                        Enviar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de éxito -->
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <h2>✓ ¡Registro Exitoso!</h2>
+            <p>Tus datos han sido enviados correctamente.</p>
+            <button class="btn btn-primary" onclick="location.reload()">Cerrar</button>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 4;
+        const formData = {};
+
+        const form = document.getElementById('wizardForm');
+        const steps = document.querySelectorAll('.form-step');
+        const progressSteps = document.querySelectorAll('.progress-step');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const successModal = document.getElementById('successModal');
+
+        function showStep(step) {
+            steps.forEach((s, index) => {
+                s.classList.remove('active');
+                if (index + 1 === step) {
+                    s.classList.add('active');
+                }
+            });
+            
+            progressSteps.forEach((s, index) => {
+                s.classList.remove('active');
+                if (index + 1 === step) {
+                    s.classList.add('active');
+                }
+                if (index + 1 < step) {
+                    s.classList.add('completed');
+                } else {
+                    s.classList.remove('completed');
+                }
+            });
+            
+            prevBtn.style.display = step === 1 ? 'none' : 'inline-block';
+            nextBtn.style.display = step === totalSteps ? 'none' : 'inline-block';
+            submitBtn.style.display = step === totalSteps ? 'inline-block' : 'none';
+            
+            if (step === totalSteps) {
+                showSummary();
+            }
+        }
+
+        function validateCurrentStep() {
+            const currentStepElement = document.querySelector(`.form-step[data-step="${currentStep}"]`);
+            const inputs = currentStepElement.querySelectorAll('input:not([type="checkbox"]), select, textarea');
+            let isValid = true;
+            
+            inputs.forEach(input => {
+                const formGroup = input.closest('.form-group');
+                const errorMessage = formGroup?.querySelector('.error-message');
+                
+                if (errorMessage) {
+                    errorMessage.textContent = '';
+                    formGroup.classList.remove('error');
+                }
+                
+                input.classList.remove('valid', 'invalid');
+                
+                if (input.hasAttribute('required') && !input.value.trim()) {
+                    if (errorMessage) {
+                        errorMessage.textContent = 'Este campo es obligatorio';
+                        formGroup.classList.add('error');
+                    }
+                    input.classList.add('invalid');
+                    isValid = false;
+                } else if (input.type === 'email' && input.value && !isValidEmail(input.value)) {
+                    if (errorMessage) {
+                        errorMessage.textContent = 'Email inválido';
+                        formGroup.classList.add('error');
+                    }
+                    input.classList.add('invalid');
+                    isValid = false;
+                } else if (input.pattern && input.value && !new RegExp(input.pattern).test(input.value)) {
+                    if (errorMessage) {
+                        errorMessage.textContent = 'Formato inválido';
+                        formGroup.classList.add('error');
+                    }
+                    input.classList.add('invalid');
+                    isValid = false;
+                } else if (input.value) {
+                    input.classList.add('valid');
+                }
+            });
+            
+            if (currentStep === 3) {
+                const interests = currentStepElement.querySelectorAll('input[name="interests"]:checked');
+                const interestsGroup = currentStepElement.querySelector('.checkbox-group').closest('.form-group');
+                const errorMessage = interestsGroup.querySelector('.error-message');
+                
+                if (interests.length === 0) {
+                    errorMessage.textContent = 'Selecciona al menos un interés';
+                    interestsGroup.classList.add('error');
+                    isValid = false;
+                } else {
+                    errorMessage.textContent = '';
+                    interestsGroup.classList.remove('error');
+                }
+            }
+            
+            if (currentStep === 4) {
+                const terms = document.getElementById('terms');
+                const formGroup = terms.closest('.form-group');
+                const errorMessage = formGroup.querySelector('.error-message');
+                
+                if (!terms.checked) {
+                    errorMessage.textContent = 'Debes aceptar los términos';
+                    formGroup.classList.add('error');
+                    isValid = false;
+                }
+            }
+            
+            return isValid;
+        }
+
+        function saveStepData() {
+            const currentStepElement = document.querySelector(`.form-step[data-step="${currentStep}"]`);
+            const inputs = currentStepElement.querySelectorAll('input, select, textarea');
+            
+            inputs.forEach(input => {
+                if (input.type === 'checkbox' && input.name === 'interests') {
+                    if (!formData.interests) formData.interests = [];
+                    if (input.checked && !formData.interests.includes(input.value)) {
+                        formData.interests.push(input.value);
+                    } else if (!input.checked) {
+                        formData.interests = formData.interests.filter(i => i !== input.value);
+                    }
+                } else if (input.type === 'checkbox') {
+                    formData[input.name] = input.checked;
+                } else if (input.value) {
+                    formData[input.name] = input.value;
+                }
+            });
+        }
+
+        function showSummary() {
+            const personalHTML = `
+                <p><strong>Nombre:</strong> ${formData.firstName} ${formData.lastName}</p>
+                <p><strong>Email:</strong> ${formData.email}</p>
+                <p><strong>Teléfono:</strong> ${formData.phone}</p>
+            `;
+            
+            const addressHTML = `
+                <p><strong>Dirección:</strong> ${formData.street}</p>
+                <p><strong>Ciudad:</strong> ${formData.city}</p>
+                <p><strong>Código Postal:</strong> ${formData.zipCode}</p>
+                <p><strong>País:</strong> ${formData.country}</p>
+            `;
+            
+            const preferencesHTML = `
+                <p><strong>Intereses:</strong> ${formData.interests?.join(', ') || 'Ninguno'}</p>
+                <p><strong>Newsletter:</strong> ${formData.newsletter ? 'Sí' : 'No'}</p>
+                ${formData.comments ? `<p><strong>Comentarios:</strong> ${formData.comments}</p>` : ''}
+            `;
+            
+            document.getElementById('summaryPersonal').innerHTML = personalHTML;
+            document.getElementById('summaryAddress').innerHTML = addressHTML;
+            document.getElementById('summaryPreferences').innerHTML = preferencesHTML;
+        }
+
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        nextBtn.addEventListener('click', () => {
+            if (validateCurrentStep()) {
+                saveStepData();
+                currentStep++;
+                showStep(currentStep);
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            currentStep--;
+            showStep(currentStep);
+        });
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            if (validateCurrentStep()) {
+                saveStepData();
+                console.log('Datos finales:', formData);
+                successModal.classList.add('active');
+            }
+        });
+
+        showStep(currentStep);
+    </script>
+</body>
+</html>

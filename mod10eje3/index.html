@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscador Avanzado - Modo Oscuro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1625 50%, #0f1419 100%);
+            color: #e5e7eb;
+            padding: 2rem;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.12) 0%, transparent 70%);
+            top: -200px;
+            right: -200px;
+            border-radius: 50%;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 70%);
+            bottom: -150px;
+            left: -150px;
+            border-radius: 50%;
+            z-index: 0;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* PANEL DE FILTROS */
+        .filters {
+            background: rgba(26, 26, 42, 0.85);
+            backdrop-filter: blur(20px);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            height: fit-content;
+            position: sticky;
+            top: 2rem;
+        }
+
+        .filters h2 {
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .filter-group {
+            margin-bottom: 2rem;
+        }
+
+        .filter-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.7rem;
+            font-size: 0.95rem;
+            color: #e5e7eb;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 0.9rem 1.1rem;
+            background: rgba(17, 24, 39, 0.6);
+            border: 2px solid rgba(139, 92, 246, 0.2);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]::placeholder {
+            color: #6b7280;
+        }
+
+        input[type="text"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            background: rgba(17, 24, 39, 0.8);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        select option {
+            background: #1a1a2a;
+            color: #fff;
+        }
+
+        /* RANGE INPUT */
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: rgba(75, 85, 99, 0.3);
+            border-radius: 5px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 2px 10px rgba(139, 92, 246, 0.5);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+            cursor: pointer;
+            border-radius: 50%;
+            border: none;
+            box-shadow: 0 2px 10px rgba(139, 92, 246, 0.5);
+        }
+
+        #priceLabel {
+            color: #8b5cf6;
+            font-weight: 700;
+        }
+
+        /* RADIO BUTTONS */
+        .radio-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+        }
+
+        .radio-options label {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-weight: normal;
+            padding: 0.7rem 1rem;
+            background: rgba(17, 24, 39, 0.4);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+            color: #d1d5db;
+        }
+
+        .radio-options label:hover {
+            border-color: rgba(139, 92, 246, 0.3);
+            background: rgba(17, 24, 39, 0.6);
+        }
+
+        .radio-options input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #8b5cf6;
+            cursor: pointer;
+        }
+
+        .btn-secondary {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(75, 85, 99, 0.3);
+            color: #e5e7eb;
+            border: 2px solid rgba(239, 68, 68, 0.3);
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-top: 1rem;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: #ef4444;
+            color: #f87171;
+        }
+
+        /* CONTENIDO PRINCIPAL */
+        .content {
+            min-height: 500px;
+        }
+
+        .results-header {
+            background: rgba(26, 26, 42, 0.6);
+            backdrop-filter: blur(10px);
+            padding: 1.2rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        #resultsCount {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #d1d5db;
+        }
+
+        /* GRILLA DE PRODUCTOS */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: rgba(26, 26, 42, 0.7);
+            backdrop-filter: blur(10px);
+            padding: 1.8rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(139, 92, 246, 0.3);
+            border-color: rgba(139, 92, 246, 0.3);
+        }
+
+        .card h4 {
+            margin-bottom: 1rem;
+            color: #8b5cf6;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .card p {
+            margin: 0.5rem 0;
+            color: #d1d5db;
+            line-height: 1.6;
+        }
+
+        .card strong {
+            color: #e5e7eb;
+        }
+
+        .card small {
+            color: #9ca3af;
+        }
+
+        /* PAGINACIÓN */
+        .pagination {
+            margin-top: 3rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            background: rgba(26, 26, 42, 0.6);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .btn-page {
+            padding: 0.9rem 2rem;
+            background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-page:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-page:disabled {
+            background: rgba(75, 85, 99, 0.3);
+            cursor: not-allowed;
+            box-shadow: none;
+            opacity: 0.5;
+        }
+
+        #pageInfo {
+            font-weight: 600;
+            color: #d1d5db;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        /* Mensaje sin resultados */
+        .grid p {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem;
+            color: #9ca3af;
+            font-size: 1.1rem;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .filters {
+                position: relative;
+                top: 0;
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 1rem;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pagination {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .btn-page {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <aside class="filters">
+            <h2>🔍 Filtros</h2>
+            <form id="filterForm">
+                
+                <div class="filter-group">
+                    <label for="search">Palabra clave:</label>
+                    <input type="text" id="search" name="q" placeholder="Buscar productos...">
+                </div>
+
+                <div class="filter-group">
+                    <label for="category">Categoría:</label>
+                    <select name="category" id="category">
+                        <option value="">Todas las categorías</option>
+                        <option value="electronics">Electrónica</option>
+                        <option value="clothing">Ropa y Accesorios</option>
+                        <option value="home">Hogar y Jardín</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Precio Máximo: <span id="priceLabel">$1000</span></label>
+                    <input type="range" name="maxPrice" id="maxPrice" min="0" max="1000" step="50" value="1000">
+                </div>
+
+                <div class="filter-group">
+                    <label>Calificación mínima:</label>
+                    <div class="radio-options">
+                        <label><input type="radio" name="rating" value="4"> ⭐ 4+ estrellas</label>
+                        <label><input type="radio" name="rating" value="3"> ⭐ 3+ estrellas</label>
+                        <label><input type="radio" name="rating" value="0" checked> Todas</label>
+                    </div>
+                </div>
+
+                <button type="button" id="clearBtn" class="btn-secondary">Limpiar Filtros</button>
+            </form>
+        </aside>
+
+        <main class="content">
+            <header class="results-header">
+                <span id="resultsCount">Cargando...</span>
+            </header>
+
+            <div id="resultsGrid" class="grid"></div>
+
+            <footer class="pagination">
+                <button id="prevBtn" class="btn-page">← Anterior</button>
+                <span id="pageInfo">Página 1 de 1</span>
+                <button id="nextBtn" class="btn-page">Siguiente →</button>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        const products = [
+            { id: 1, name: "MacBook Air M2", category: "electronics", price: 999, rating: 5 },
+            { id: 2, name: "Sudadera Oversize", category: "clothing", price: 45, rating: 4 },
+            { id: 3, name: "Cafetera Espresso", category: "home", price: 120, rating: 4 },
+            { id: 4, name: "Teclado Mecánico", category: "electronics", price: 85, rating: 5 },
+            { id: 5, name: "Pantalón Denim", category: "clothing", price: 60, rating: 3 },
+            { id: 6, name: "Lámpara de Pie", category: "home", price: 35, rating: 2 },
+            { id: 7, name: "iPhone 15", category: "electronics", price: 800, rating: 5 },
+            { id: 8, name: "Zapatillas Running", category: "clothing", price: 110, rating: 4 },
+            { id: 9, name: "Set de Cuchillos", category: "home", price: 75, rating: 3 },
+            { id: 10, name: "Monitor 4K", category: "electronics", price: 400, rating: 4 }
+        ];
+
+        const ITEMS_PER_PAGE = 3;
+
+        const form = document.getElementById('filterForm');
+        const resultsGrid = document.getElementById('resultsGrid');
+        const resultsCount = document.getElementById('resultsCount');
+        const pageInfo = document.getElementById('pageInfo');
+        const priceLabel = document.getElementById('priceLabel');
+
+        function debounce(func, delay = 400) {
+            let timeout;
+            return (...args) => {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), delay);
+            };
+        }
+
+        function syncFiltersToURL() {
+            const formData = new FormData(form);
+            const params = new URLSearchParams();
+
+            formData.forEach((value, key) => {
+                if (value && value !== "0") {
+                    params.set(key, value);
+                }
+            });
+
+            params.set('page', '1');
+
+            const newRelativePathQuery = window.location.pathname + '?' + params.toString();
+            window.history.pushState(null, '', newRelativePathQuery);
+
+            render();
+        }
+
+        function render() {
+            const params = new URLSearchParams(window.location.search);
+            const q = params.get('q')?.toLowerCase() || "";
+            const category = params.get('category') || "";
+            const maxPrice = parseInt(params.get('maxPrice')) || 1000;
+            const rating = parseInt(params.get('rating')) || 0;
+            let page = parseInt(params.get('page')) || 1;
+
+            const filtered = products.filter(item => {
+                const matchesName = item.name.toLowerCase().includes(q);
+                const matchesCategory = category === "" || item.category === category;
+                const matchesPrice = item.price <= maxPrice;
+                const matchesRating = item.rating >= rating;
+                return matchesName && matchesCategory && matchesPrice && matchesRating;
+            });
+
+            const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE) || 1;
+            if (page > totalPages) page = totalPages;
+            
+            const start = (page - 1) * ITEMS_PER_PAGE;
+            const end = start + ITEMS_PER_PAGE;
+            const itemsToShow = filtered.slice(start, end);
+
+            resultsGrid.innerHTML = itemsToShow.length > 0 
+                ? itemsToShow.map(p => `
+                    <article class="card">
+                        <h4>${p.name}</h4>
+                        <p><strong>Precio:</strong> $${p.price}</p>
+                        <p><small>Categoría: ${p.category}</small></p>
+                        <p>⭐ ${p.rating} / 5</p>
+                    </article>
+                `).join('')
+                : `<p>No se encontraron productos con esos filtros.</p>`;
+
+            resultsCount.innerText = `${filtered.length} productos encontrados`;
+            pageInfo.innerText = `Página ${page} de ${totalPages}`;
+            
+            document.getElementById('prevBtn').disabled = (page <= 1);
+            document.getElementById('nextBtn').disabled = (page >= totalPages);
+
+            priceLabel.innerText = `$${maxPrice}`;
+        }
+
+        const handleSearchInput = debounce(() => syncFiltersToURL());
+        document.getElementById('search').addEventListener('input', handleSearchInput);
+
+        form.addEventListener('change', (e) => {
+            if (e.target.id !== 'search') {
+                syncFiltersToURL();
+            }
+        });
+
+        function changePage(offset) {
+            const params = new URLSearchParams(window.location.search);
+            let currentPage = parseInt(params.get('page')) || 1;
+            params.set('page', currentPage + offset);
+            
+            window.history.pushState(null, '', `?${params.toString()}`);
+            render();
+        }
+
+        document.getElementById('prevBtn').addEventListener('click', () => changePage(-1));
+        document.getElementById('nextBtn').addEventListener('click', () => changePage(1));
+
+        document.getElementById('clearBtn').addEventListener('click', () => {
+            form.reset();
+            window.history.pushState(null, '', window.location.pathname);
+            render();
+        });
+
+        window.addEventListener('popstate', render);
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            params.forEach((value, key) => {
+                const input = form.elements[key];
+                if (input) {
+                    if (input.type === 'radio') {
+                        if (input.value === value) input.checked = true;
+                    } else {
+                        input.value = value;
+                    }
+                }
+            });
+            render();
+        });
+    </script>
+</body>
+</html>

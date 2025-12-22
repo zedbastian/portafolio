@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de IMC - Modo Oscuro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1625 50%, #0f1419 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
+            top: -200px;
+            right: -200px;
+            border-radius: 50%;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+            bottom: -150px;
+            left: -150px;
+            border-radius: 50%;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 750px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .calculator-card {
+            background: rgba(26, 26, 42, 0.85);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5),
+                        0 0 100px rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        h1 {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #9ca3af;
+            margin-bottom: 2.5rem;
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.6rem;
+            color: #e5e7eb;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            background: rgba(17, 24, 39, 0.6);
+            border: 2px solid rgba(139, 92, 246, 0.2);
+            border-radius: 12px;
+            font-size: 1rem;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input::placeholder {
+            color: #6b7280;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            background: rgba(17, 24, 39, 0.8);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+        }
+
+        .form-group input.valid {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .form-group input.invalid {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .error-message {
+            display: block;
+            color: #f87171;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            min-height: 1.2rem;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            cursor: pointer;
+            color: #d1d5db;
+            font-weight: normal;
+            padding: 0.8rem 1.5rem;
+            background: rgba(17, 24, 39, 0.4);
+            border-radius: 10px;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .radio-label:hover {
+            border-color: rgba(139, 92, 246, 0.3);
+            background: rgba(17, 24, 39, 0.6);
+        }
+
+        .radio-label input {
+            width: auto;
+            transform: scale(1.2);
+            accent-color: #8b5cf6;
+            margin: 0;
+        }
+
+        .radio-label input:checked + span {
+            color: #8b5cf6;
+        }
+
+        .btn-calculate {
+            width: 100%;
+            padding: 1.2rem;
+            background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.3);
+            margin-top: 1rem;
+        }
+
+        .btn-calculate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-calculate:active {
+            transform: translateY(0);
+        }
+
+        .result-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-section h2 {
+            color: #fff;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .imc-display {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            padding: 2rem;
+            background: rgba(139, 92, 246, 0.08);
+            border-radius: 16px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .imc-value {
+            font-size: 4.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .imc-category {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .imc-bar {
+            position: relative;
+            height: 70px;
+            display: flex;
+            border-radius: 35px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .bar-segment {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .bar-segment.bajo-peso {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+
+        .bar-segment.normal {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .bar-segment.sobrepeso {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .bar-segment.obesidad {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .imc-indicator {
+            position: absolute;
+            top: -12px;
+            width: 0;
+            height: 0;
+            border-left: 16px solid transparent;
+            border-right: 16px solid transparent;
+            border-top: 24px solid #fff;
+            transform: translateX(-16px);
+            transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        .imc-ranges {
+            background: rgba(17, 24, 39, 0.4);
+            padding: 1.8rem;
+            border-radius: 16px;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .imc-ranges h3 {
+            color: #e5e7eb;
+            margin-bottom: 1.2rem;
+            font-size: 1.1rem;
+        }
+
+        .imc-ranges ul {
+            list-style: none;
+        }
+
+        .imc-ranges li {
+            display: flex;
+            align-items: center;
+            padding: 0.6rem 0;
+            color: #d1d5db;
+        }
+
+        .dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            margin-right: 1rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .dot.bajo-peso { background: #3b82f6; }
+        .dot.normal { background: #10b981; }
+        .dot.sobrepeso { background: #f59e0b; }
+        .dot.obesidad { background: #ef4444; }
+
+        .recommendations {
+            background: rgba(16, 185, 129, 0.1);
+            padding: 1.8rem;
+            border-radius: 16px;
+            border-left: 4px solid #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .recommendations h3 {
+            color: #34d399;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .recommendations p {
+            color: #d1d5db;
+            line-height: 1.7;
+        }
+
+        .history-section {
+            margin-top: 2.5rem;
+            padding-top: 2rem;
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .history-section h2 {
+            color: #fff;
+            margin-bottom: 1.2rem;
+            font-size: 1.5rem;
+        }
+
+        #historyList {
+            max-height: 350px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        #historyList::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #historyList::-webkit-scrollbar-track {
+            background: rgba(17, 24, 39, 0.4);
+            border-radius: 10px;
+        }
+
+        #historyList::-webkit-scrollbar-thumb {
+            background: rgba(139, 92, 246, 0.5);
+            border-radius: 10px;
+        }
+
+        #historyList::-webkit-scrollbar-thumb:hover {
+            background: rgba(139, 92, 246, 0.7);
+        }
+
+        .history-item {
+            background: rgba(17, 24, 39, 0.5);
+            padding: 1.2rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+        }
+
+        .history-item:hover {
+            background: rgba(17, 24, 39, 0.7);
+            border-color: rgba(139, 92, 246, 0.3);
+            transform: translateX(4px);
+        }
+
+        .history-info {
+            flex: 1;
+            color: #d1d5db;
+        }
+
+        .history-imc {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .history-date {
+            font-size: 0.85rem;
+            color: #9ca3af;
+            margin-top: 0.3rem;
+        }
+
+        .empty-history {
+            text-align: center;
+            color: #6b7280;
+            padding: 3rem;
+            background: rgba(17, 24, 39, 0.3);
+            border-radius: 12px;
+        }
+
+        .btn-clear-history {
+            width: 100%;
+            padding: 1rem;
+            background: transparent;
+            color: #ef4444;
+            border: 2px solid #ef4444;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: all 0.3s;
+        }
+
+        .btn-clear-history:hover {
+            background: #ef4444;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        @media (max-width: 600px) {
+            .calculator-card {
+                padding: 1.8rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .imc-value {
+                font-size: 3.5rem;
+            }
+            
+            .bar-segment {
+                font-size: 0.75rem;
+            }
+
+            .radio-group {
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+
+            .radio-label {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="calculator-card">
+            <h1>⚖️ Calculadora de IMC</h1>
+            <p class="subtitle">Calcula tu Índice de Masa Corporal</p>
+            
+            <form id="imcForm">
+                <div class="form-group">
+                    <label for="peso">Peso (kg)</label>
+                    <input 
+                        type="number" 
+                        id="peso" 
+                        name="peso"
+                        placeholder="Ej: 70"
+                        min="1"
+                        max="300"
+                        step="0.1"
+                        required
+                    >
+                    <span class="error-message"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="altura">Altura (cm)</label>
+                    <input 
+                        type="number" 
+                        id="altura" 
+                        name="altura"
+                        placeholder="Ej: 170"
+                        min="50"
+                        max="250"
+                        step="0.1"
+                        required
+                    >
+                    <span class="error-message"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="edad">Edad (años)</label>
+                    <input 
+                        type="number" 
+                        id="edad" 
+                        name="edad"
+                        placeholder="Ej: 25"
+                        min="1"
+                        max="120"
+                        required
+                    >
+                    <span class="error-message"></span>
+                </div>
+
+                <div class="form-group">
+                    <label>Sexo</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input type="radio" name="sexo" value="masculino" checked>
+                            <span>Masculino</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="sexo" value="femenino">
+                            <span>Femenino</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-calculate">Calcular IMC</button>
+            </form>
+
+            <div class="result-section" id="resultSection" style="display: none;">
+                <h2>Tu Resultado</h2>
+                
+                <div class="imc-display">
+                    <div class="imc-value" id="imcValue">0.0</div>
+                    <div class="imc-category" id="imcCategory">-</div>
+                </div>
+
+                <div class="imc-bar">
+                    <div class="imc-indicator" id="imcIndicator"></div>
+                    <div class="bar-segment bajo-peso">Bajo peso</div>
+                    <div class="bar-segment normal">Normal</div>
+                    <div class="bar-segment sobrepeso">Sobrepeso</div>
+                    <div class="bar-segment obesidad">Obesidad</div>
+                </div>
+
+                <div class="imc-ranges">
+                    <h3>Rangos de IMC:</h3>
+                    <ul>
+                        <li><span class="dot bajo-peso"></span> Bajo peso: Menor a 18.5</li>
+                        <li><span class="dot normal"></span> Normal: 18.5 - 24.9</li>
+                        <li><span class="dot sobrepeso"></span> Sobrepeso: 25 - 29.9</li>
+                        <li><span class="dot obesidad"></span> Obesidad: 30 o mayor</li>
+                    </ul>
+                </div>
+
+                <div class="recommendations" id="recommendations">
+                    <h3>Recomendaciones:</h3>
+                    <p id="recommendationText"></p>
+                </div>
+            </div>
+
+            <div class="history-section">
+                <h2>Historial</h2>
+                <div id="historyList">
+                    <p class="empty-history">No hay cálculos previos</p>
+                </div>
+                <button class="btn-clear-history" id="clearHistoryBtn" style="display: none;">
+                    Limpiar Historial
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('imcForm');
+        const pesoInput = document.getElementById('peso');
+        const alturaInput = document.getElementById('altura');
+        const edadInput = document.getElementById('edad');
+        const resultSection = document.getElementById('resultSection');
+        const imcValue = document.getElementById('imcValue');
+        const imcCategory = document.getElementById('imcCategory');
+        const imcIndicator = document.getElementById('imcIndicator');
+        const recommendationText = document.getElementById('recommendationText');
+        const historyList = document.getElementById('historyList');
+        const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+
+        let history = [];
+        
+        // Cargar historial al iniciar
+        try {
+            const saved = localStorage.getItem('imcHistory');
+            if (saved) {
+                history = JSON.parse(saved);
+            }
+        } catch (e) {
+            console.log('No se pudo cargar el historial');
+        }
+
+        function calcularIMC(peso, alturaCm) {
+            const alturaM = alturaCm / 100;
+            return peso / (alturaM * alturaM);
+        }
+
+        function obtenerCategoria(imc) {
+            if (imc < 18.5) return 'Bajo peso';
+            if (imc < 25) return 'Normal';
+            if (imc < 30) return 'Sobrepeso';
+            return 'Obesidad';
+        }
+
+        function obtenerColor(imc) {
+            if (imc < 18.5) return '#3b82f6';
+            if (imc < 25) return '#10b981';
+            if (imc < 30) return '#f59e0b';
+            return '#ef4444';
+        }
+
+        function obtenerRecomendaciones(imc, categoria) {
+            const recomendaciones = {
+                'Bajo peso': 'Tu IMC está por debajo del rango saludable. Considera consultar con un nutricionista para desarrollar un plan de alimentación que te ayude a alcanzar un peso saludable de manera segura.',
+                'Normal': '¡Felicidades! Tu IMC está en el rango saludable. Continúa con una dieta balanceada y ejercicio regular para mantener tu salud.',
+                'Sobrepeso': 'Tu IMC indica sobrepeso. Considera adoptar hábitos más saludables como una dieta equilibrada y actividad física regular. Consulta con un profesional de la salud.',
+                'Obesidad': 'Tu IMC indica obesidad. Es importante consultar con un médico o nutricionista para desarrollar un plan personalizado de salud y bienestar.'
+            };
+            
+            return recomendaciones[categoria] || '';
+        }
+
+        function posicionarIndicador(imc) {
+            let porcentaje;
+            
+            if (imc < 18.5) {
+                porcentaje = (imc / 18.5) * 25;
+            } else if (imc < 25) {
+                porcentaje = 25 + ((imc - 18.5) / (25 - 18.5)) * 25;
+            } else if (imc < 30) {
+                porcentaje = 50 + ((imc - 25) / (30 - 25)) * 25;
+            } else {
+                porcentaje = 75 + Math.min(((imc - 30) / 10) * 25, 25);
+            }
+            
+            imcIndicator.style.left = `${porcentaje}%`;
+        }
+
+        function mostrarResultado(imc, categoria) {
+            // Mostrar sección primero
+            resultSection.style.display = 'block';
+            
+            // Luego actualizar contenido
+            setTimeout(() => {
+                imcValue.textContent = imc.toFixed(1);
+                imcCategory.textContent = categoria;
+                imcCategory.style.color = obtenerColor(imc);
+                
+                posicionarIndicador(imc);
+                
+                recommendationText.textContent = obtenerRecomendaciones(imc, categoria);
+                
+                resultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 10);
+        }
+
+        function guardarEnHistorial(peso, altura, imc, categoria) {
+            const calculo = {
+                peso,
+                altura,
+                imc: imc.toFixed(1),
+                categoria,
+                fecha: new Date().toLocaleString('es-ES')
+            };
+            
+            history.unshift(calculo);
+            
+            if (history.length > 10) {
+                history = history.slice(0, 10);
+            }
+            
+            // Guardar en localStorage
+            try {
+                localStorage.setItem('imcHistory', JSON.stringify(history));
+            } catch (e) {
+                console.log('No se pudo guardar el historial');
+            }
+            
+            renderizarHistorial();
+        }
+
+        function renderizarHistorial() {
+            if (history.length === 0) {
+                historyList.innerHTML = '<p class="empty-history">No hay cálculos previos</p>';
+                clearHistoryBtn.style.display = 'none';
+                return;
+            }
+            
+            clearHistoryBtn.style.display = 'block';
+            
+            historyList.innerHTML = history.map(item => `
+                <div class="history-item">
+                    <div class="history-info">
+                        <div>Peso: ${item.peso}kg | Altura: ${item.altura}cm</div>
+                        <div class="history-date">${item.fecha}</div>
+                    </div>
+                    <div>
+                        <div class="history-imc">${item.imc}</div>
+                        <div style="color: ${obtenerColor(parseFloat(item.imc))}">${item.categoria}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function validarCampo(input) {
+            const value = parseFloat(input.value);
+            const min = parseFloat(input.min);
+            const max = parseFloat(input.max);
+            const errorSpan = input.parentElement.querySelector('.error-message');
+            
+            // Si no hay span de error, no validar visualmente
+            if (!errorSpan) return true;
+            
+            if (!input.value) {
+                errorSpan.textContent = 'Este campo es obligatorio';
+                input.classList.add('invalid');
+                input.classList.remove('valid');
+                return false;
+            }
+            
+            if (isNaN(value) || value < min || value > max) {
+                errorSpan.textContent = `Debe estar entre ${min} y ${max}`;
+                input.classList.add('invalid');
+                input.classList.remove('valid');
+                return false;
+            }
+            
+            errorSpan.textContent = '';
+            input.classList.remove('invalid');
+            input.classList.add('valid');
+            return true;
+        }
+
+        pesoInput.addEventListener('input', () => validarCampo(pesoInput));
+        alturaInput.addEventListener('input', () => validarCampo(alturaInput));
+        edadInput.addEventListener('input', () => validarCampo(edadInput));
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const pesoValido = validarCampo(pesoInput);
+            const alturaValida = validarCampo(alturaInput);
+            const edadValida = validarCampo(edadInput);
+            
+            if (!pesoValido || !alturaValida || !edadValida) {
+                alert('Por favor, completa todos los campos correctamente');
+                return;
+            }
+            
+            const peso = parseFloat(pesoInput.value);
+            const altura = parseFloat(alturaInput.value);
+            
+            const imc = calcularIMC(peso, altura);
+            const categoria = obtenerCategoria(imc);
+            
+            mostrarResultado(imc, categoria);
+            
+            guardarEnHistorial(peso, altura, imc, categoria);
+        });
+
+        clearHistoryBtn.addEventListener('click', () => {
+            if (confirm('¿Estás seguro de eliminar todo el historial?')) {
+                history = [];
+                try {
+                    localStorage.removeItem('imcHistory');
+                } catch (e) {
+                    console.log('No se pudo limpiar el historial');
+                }
+                renderizarHistorial();
+            }
+        });
+
+        renderizarHistorial();
+
+        console.log('✅ Calculadora de IMC inicializada');
+    </script>
+</body>
+</html>
